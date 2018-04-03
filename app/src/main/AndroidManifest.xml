@@ -2,6 +2,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.scy.health">
 
+    <!-- begin: baidu speech sdk  权限 -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+\    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!-- end: baidu speech sdk  权限 -->
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -9,7 +17,24 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <!-- begin: baidu speech sdk  参数 -->
+        <meta-data
+            android:name="com.baidu.speech.APP_ID"
+            android:value="11041790" />
+        <meta-data
+            android:name="com.baidu.speech.API_KEY"
+            android:value="H6gkMLq2UCcKLsAbRMMxnnaF" />
+        <meta-data
+            android:name="com.baidu.speech.SECRET_KEY"
+            android:value="b99dc1dd6faf38ed08821a65f241d9df" />
+        <!-- 请确认集成后的包名是否正确，本demo的包名是com.baidu.speech.recognizerdemo，在build.gradle文件中查看 -->
+        <service
+            android:name="com.scy.health.VoiceRecognitionService"
+            android:exported="false" />
+        <!-- end: baidu speech sdk  参数 -->
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
