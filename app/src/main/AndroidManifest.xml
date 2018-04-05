@@ -4,13 +4,13 @@
 
     <!-- begin: baidu speech sdk  权限 -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-\    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <!-- end: baidu speech sdk  权限 -->
 
     <application
@@ -30,7 +30,6 @@
         <meta-data
             android:name="com.baidu.speech.SECRET_KEY"
             android:value="b99dc1dd6faf38ed08821a65f241d9df" />
-        <!-- 请确认集成后的包名是否正确，本demo的包名是com.baidu.speech.recognizerdemo，在build.gradle文件中查看 -->
         <service
             android:name="com.scy.health.VoiceRecognitionService"
             android:exported="false" />
