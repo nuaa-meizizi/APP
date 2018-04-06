@@ -30,6 +30,7 @@ public class XfyunASR {
     private static final String TAG = "XfyunASR";
     private Context context;
     private BaiduWakeUp baiduWakeUp;
+    private RecognizerDialog mDialog;
     // 用HashMap存储听写结果
     private HashMap<String, String> mIatResults = new LinkedHashMap<String , String>();
     public XfyunASR(Context context){
@@ -50,7 +51,7 @@ public class XfyunASR {
     public void startSpeechDialog(BaiduWakeUp baiduWakeUp) {
         this.baiduWakeUp = baiduWakeUp;
         //1. 创建RecognizerDialog对象
-        RecognizerDialog mDialog = new RecognizerDialog(context, new MyInitListener()) ;
+        mDialog = new RecognizerDialog(context, new MyInitListener()) ;
         //2. 设置accent、 language等参数
         mDialog.setParameter(SpeechConstant. LANGUAGE, "zh_cn" );// 设置中文
         mDialog.setParameter(SpeechConstant. ACCENT, "mandarin" );
@@ -61,7 +62,7 @@ public class XfyunASR {
         //3.设置回调接口
         mDialog.setListener(new MyRecognizerDialogListener()) ;
         //4. 显示dialog，接收语音输入
-        mDialog.show() ;
+        mDialog.show();
     }
 
     /**
@@ -151,21 +152,12 @@ public class XfyunASR {
         public void onError (SpeechError speechError){
             if(speechError.getErrorCode() == 10118)
             {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        Instrumentation inst = new Instrumentation();
-                        inst.sendPointerSync(MotionEvent.obtain(SystemClock.uptimeMillis(),SystemClock.uptimeMillis(),
-                                MotionEvent.ACTION_DOWN, 200, 500, 0));
-                        inst.sendPointerSync(MotionEvent.obtain(SystemClock.uptimeMillis(),SystemClock.uptimeMillis(),
-                                MotionEvent.ACTION_UP, 200, 500, 0));
-                    }
-                }).start();
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                mDialog.dismiss();
                 baiduWakeUp.start();
             }
         }
