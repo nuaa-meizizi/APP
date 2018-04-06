@@ -1,8 +1,11 @@
 package com.scy.health.util;
 
+import android.app.Instrumentation;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.widget.Toast;
 
 import com.iflytek.cloud.ErrorCode;
@@ -146,7 +149,25 @@ public class XfyunASR {
 
         @Override
         public void onError (SpeechError speechError){
-
+            if(speechError.getErrorCode() == 10118)
+            {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        Instrumentation inst = new Instrumentation();
+                        inst.sendPointerSync(MotionEvent.obtain(SystemClock.uptimeMillis(),SystemClock.uptimeMillis(),
+                                MotionEvent.ACTION_DOWN, 200, 500, 0));
+                        inst.sendPointerSync(MotionEvent.obtain(SystemClock.uptimeMillis(),SystemClock.uptimeMillis(),
+                                MotionEvent.ACTION_UP, 200, 500, 0));
+                    }
+                }).start();
+                baiduWakeUp.start();
+            }
         }
     }
 
@@ -191,6 +212,7 @@ public class XfyunASR {
             if (error == null) {
                 Log.d(TAG,"播放完成");
             } else if (error != null ) {
+                System.out.println("!!!!!!");
                 Log.d(TAG,error.getPlainDescription( true));
             }
         }
