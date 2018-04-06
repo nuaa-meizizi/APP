@@ -1,4 +1,5 @@
 package com.scy.health;
+import android.media.MediaPlayer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -44,7 +45,8 @@ public class MainActivity extends AppCompatActivity implements EventListener {
         }
         if (name.equals(SpeechConstant.CALLBACK_EVENT_WAKEUP_SUCCESS)){     //唤醒事件
             baiduWakeUp.stop();
-            xfyunASR.speekText("请吩咐");
+            MediaPlayer mMediaPlayer= MediaPlayer.create(this, R.raw.response);
+            mMediaPlayer.start();
             try {
                 Thread.sleep(1200);
             } catch (Exception e) {

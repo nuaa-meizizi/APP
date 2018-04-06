@@ -39,10 +39,10 @@ public class XfyunASR {
     public void speekText(String s) {
         SpeechSynthesizer mTts = SpeechSynthesizer.createSynthesizer( context, null);
         mTts.setParameter(SpeechConstant. VOICE_NAME, "xiaoyu" ); // 设置发音人
-        mTts.setParameter(SpeechConstant. SPEED, "50" );// 设置语速
+        mTts.setParameter(SpeechConstant. SPEED, "100" );// 设置语速
         mTts.setParameter(SpeechConstant. VOLUME, "100" );// 设置音量，范围 0~100
         mTts.setParameter(SpeechConstant. ENGINE_TYPE, SpeechConstant. TYPE_CLOUD); //设置云端
-        //mTts.setParameter(SpeechConstant. TTS_AUDIO_PATH, "./sdcard/iflytek.pcm" );
+       // mTts.setParameter(SpeechConstant. TTS_AUDIO_PATH, "/storage/emulated/0/AudioRecorder/iflytek." );
         //3.开始合成
         mTts.startSpeaking( s, new MySynthesizerListener()) ;
 
