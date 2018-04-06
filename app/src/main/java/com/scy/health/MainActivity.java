@@ -45,8 +45,7 @@ public class MainActivity extends AppCompatActivity implements EventListener {
         }
         if (name.equals(SpeechConstant.CALLBACK_EVENT_WAKEUP_SUCCESS)){     //唤醒事件
             baiduWakeUp.stop();
-            MediaPlayer mMediaPlayer= MediaPlayer.create(this, R.raw.response);
-            mMediaPlayer.start();
+            xfyunASR.speekText("请吩咐");
             try {
                 Thread.sleep(1200);
             } catch (Exception e) {

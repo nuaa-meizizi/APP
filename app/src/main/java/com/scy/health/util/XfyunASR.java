@@ -2,6 +2,7 @@ package com.scy.health.util;
 
 import android.app.Instrumentation;
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
@@ -19,6 +20,7 @@ import com.iflytek.cloud.SpeechSynthesizer;
 import com.iflytek.cloud.SynthesizerListener;
 import com.iflytek.cloud.ui.RecognizerDialog;
 import com.iflytek.cloud.ui.RecognizerDialogListener;
+import com.scy.health.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,15 +39,20 @@ public class XfyunASR {
         this.context = context;
     }
     public void speekText(String s) {
-        SpeechSynthesizer mTts = SpeechSynthesizer.createSynthesizer( context, null);
-        mTts.setParameter(SpeechConstant. VOICE_NAME, "xiaoyu" ); // 设置发音人
-        mTts.setParameter(SpeechConstant. SPEED, "100" );// 设置语速
-        mTts.setParameter(SpeechConstant. VOLUME, "100" );// 设置音量，范围 0~100
-        mTts.setParameter(SpeechConstant. ENGINE_TYPE, SpeechConstant. TYPE_CLOUD); //设置云端
-       // mTts.setParameter(SpeechConstant. TTS_AUDIO_PATH, "/storage/emulated/0/AudioRecorder/iflytek." );
-        //3.开始合成
-        mTts.startSpeaking( s, new MySynthesizerListener()) ;
-
+        if (s.equals("请吩咐")){           //优先播放本地音频
+            MediaPlayer mMediaPlayer= MediaPlayer.create(context, R.raw.response);
+            mMediaPlayer.start();
+        }
+        else{
+            SpeechSynthesizer mTts = SpeechSynthesizer.createSynthesizer( context, null);
+            mTts.setParameter(SpeechConstant. VOICE_NAME, "xiaoyu" ); // 设置发音人
+            mTts.setParameter(SpeechConstant. SPEED, "50" );// 设置语速
+            mTts.setParameter(SpeechConstant. VOLUME, "100" );// 设置音量，范围 0~100
+            mTts.setParameter(SpeechConstant. ENGINE_TYPE, SpeechConstant. TYPE_CLOUD); //设置云端
+            // mTts.setParameter(SpeechConstant. TTS_AUDIO_PATH, "/storage/emulated/0/AudioRecorder/iflytek." );
+            //3.开始合成
+            mTts.startSpeaking( s, new MySynthesizerListener()) ;
+        }
     }
 
     public void startSpeechDialog(BaiduWakeUp baiduWakeUp) {
