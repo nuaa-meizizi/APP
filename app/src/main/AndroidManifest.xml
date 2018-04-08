@@ -11,8 +11,8 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
-    <!-- end: baidu speech sdk  权限 -->
 
+    <!-- end: baidu speech sdk  权限 -->
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -20,6 +20,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <!-- begin: baidu speech sdk  参数 -->
         <meta-data
             android:name="com.baidu.speech.APP_ID"
@@ -30,12 +31,14 @@
         <meta-data
             android:name="com.baidu.speech.SECRET_KEY"
             android:value="b99dc1dd6faf38ed08821a65f241d9df" />
+
         <service
-            android:name="com.scy.health.VoiceRecognitionService"
+            android:name=".VoiceRecognitionService"
             android:exported="false" />
         <!-- end: baidu speech sdk  参数 -->
         <activity
             android:name=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
