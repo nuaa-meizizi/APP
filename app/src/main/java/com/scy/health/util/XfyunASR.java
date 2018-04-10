@@ -1,14 +1,11 @@
 package com.scy.health.util;
 
-import android.app.Instrumentation;
+import android.support.v4.app.FragmentTransaction;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.widget.Toast;
-
 import com.iflytek.cloud.ErrorCode;
 import com.iflytek.cloud.InitListener;
 import com.iflytek.cloud.RecognizerListener;
@@ -31,8 +28,8 @@ import java.util.LinkedHashMap;
 public class XfyunASR {
     private static final String TAG = "XfyunASR";
     private Context context;
-    private BaiduWakeUp baiduWakeUp;
     private RecognizerDialog mDialog;
+    XfyunInterface myInterface;
     // 用HashMap存储听写结果
     private HashMap<String, String> mIatResults = new LinkedHashMap<String , String>();
     public XfyunASR(Context context){
@@ -41,6 +38,14 @@ public class XfyunASR {
     public void speekText(String s) {
         if (s.equals("请吩咐")){           //优先播放本地音频
             MediaPlayer mMediaPlayer= MediaPlayer.create(context, R.raw.response);
+            mMediaPlayer.start();
+        }
+        else if (s.equals("好的")){
+            MediaPlayer mMediaPlayer= MediaPlayer.create(context, R.raw.yessir);
+            mMediaPlayer.start();
+        }
+        else if (s.equals("我不能理解你的命令")){
+            MediaPlayer mMediaPlayer= MediaPlayer.create(context, R.raw.failunderstand);
             mMediaPlayer.start();
         }
         else{
@@ -55,16 +60,16 @@ public class XfyunASR {
         }
     }
 
-    public void startSpeechDialog(BaiduWakeUp baiduWakeUp) {
-        this.baiduWakeUp = baiduWakeUp;
-        //1. 创建RecognizerDialog对象
+    public void startSpeechDialog(XfyunInterface myInterface) {
+        this.myInterface = myInterface;
+        //yessir. 创建RecognizerDialog对象
         mDialog = new RecognizerDialog(context, new MyInitListener()) ;
         //2. 设置accent、 language等参数
         mDialog.setParameter(SpeechConstant. LANGUAGE, "zh_cn" );// 设置中文
         mDialog.setParameter(SpeechConstant. ACCENT, "mandarin" );
         // 若要将UI控件用于语义理解，必须添加以下参数设置，设置之后 onResult回调返回将是语义理解
         // 结果
-        // mDialog.setParameter("asr_sch", "1");
+        // mDialog.setParameter("asr_sch", "yessir");
         // mDialog.setParameter("nlp_version", "2.0");
         //3.设置回调接口
         mDialog.setListener(new MyRecognizerDialogListener()) ;
@@ -76,7 +81,7 @@ public class XfyunASR {
      * 语音识别
      */
     protected void startSpeech() {
-        //1. 创建SpeechRecognizer对象，第二个参数： 本地识别时传 InitListener
+        //yessir. 创建SpeechRecognizer对象，第二个参数： 本地识别时传 InitListener
         SpeechRecognizer mIat = SpeechRecognizer.createRecognizer( context, null); //语音识别器
         //2. 设置听写参数，详见《 MSC Reference Manual》 SpeechConstant类
         mIat.setParameter(SpeechConstant. DOMAIN, "iat" );// 短信和日常用语： iat (默认)
@@ -150,8 +155,7 @@ public class XfyunASR {
                 resultBuffer.append(mIatResults.get(key));
             }
             if (isLast){
-                System.out.println(resultBuffer);
-                baiduWakeUp.start();
+                myInterface.GetData(resultBuffer.toString());   //结果回调
             }
         }
 
@@ -165,7 +169,7 @@ public class XfyunASR {
                     e.printStackTrace();
                 }
                 mDialog.dismiss();
-                baiduWakeUp.start();
+                myInterface.onError("ERRPR");
             }
         }
     }

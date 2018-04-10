@@ -16,6 +16,7 @@ import com.scy.health.fragment.Home;
 import com.scy.health.fragment.MySetting;
 import com.scy.health.util.BaiduWakeUp;
 import com.scy.health.util.XfyunASR;
+import com.scy.health.util.XfyunInterface;
 
 import org.w3c.dom.Text;
 
@@ -32,12 +33,14 @@ public class MainActivity extends AppCompatActivity implements EventListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         SpeechUtility.createUtility(this, com.iflytek.cloud.SpeechConstant.APPID +"=5ac5d9c8");
         baiduWakeUp = new BaiduWakeUp(this,this);
         xfyunASR = new XfyunASR(this);
         baiduWakeUp.start();
         //底部选择栏
         initView();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         setTabSelection(0);
     }
     @Override
@@ -63,7 +66,17 @@ public class MainActivity extends AppCompatActivity implements EventListener {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            xfyunASR.startSpeechDialog(baiduWakeUp);
+            xfyunASR.startSpeechDialog(new XfyunInterface() {
+                @Override
+                public void GetData(String content) {
+                    response(content.substring(0,content.length()-1));
+                    baiduWakeUp.start();
+                }
+                @Override
+                public void onError(String errorData) {
+                    baiduWakeUp.start();
+                }
+            });
         }
         baiduWakeUp.printLog(logTxt);
     }
@@ -124,6 +137,25 @@ public class MainActivity extends AppCompatActivity implements EventListener {
         }
         if (setting != null) {
             transaction.remove(setting);
+        }
+    }
+
+    private void response(String content){      //自定义语音指令
+        System.out.println(content);
+        if (content.equals("进入首页")){
+            setTabSelection(0);
+            xfyunASR.speekText("好的");
+        }
+        else if (content.equals("驾驶模式")){
+            setTabSelection(1);
+            xfyunASR.speekText("好的");
+        }
+        else if (content.equals("个人设置")){
+            setTabSelection(2);
+            xfyunASR.speekText("好的");
+        }
+        else {
+            xfyunASR.speekText("我不能理解你的命令");
         }
     }
 }
