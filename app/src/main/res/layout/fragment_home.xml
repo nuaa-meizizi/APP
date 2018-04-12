@@ -35,11 +35,10 @@
                 android:layout_height="match_parent"
                 android:layout_margin="10dp"
                 android:layout_weight="1"
+                android:orientation="vertical"
                 android:background="@drawable/shape_corner">
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="home" />
+                <include layout="@layout/weather_now"/>
+                <include layout="@layout/weather_future"/>
             </LinearLayout>
 
             <LinearLayout
