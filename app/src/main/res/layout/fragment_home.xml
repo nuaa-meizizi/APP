@@ -17,11 +17,19 @@
             android:layout_height="match_parent"
             android:layout_margin="10dp"
             android:layout_weight="1"
+            android:orientation="vertical"
             android:background="@drawable/shape_corner">
-            <TextView
+            <org.angmarch.views.NiceSpinner
+                android:id="@+id/nice_spinner"
+                android:layout_width="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_height="wrap_content" />
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/lineChart"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="home" />
+                android:layout_centerInParent="true"/>
+
         </LinearLayout>
 
         <LinearLayout
