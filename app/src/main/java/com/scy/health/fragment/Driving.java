@@ -62,4 +62,11 @@ public class Driving extends Fragment {
             }
         });
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        meau.setVisibility(View.VISIBLE);
+        backup.setVisibility(View.GONE);
+    }
 }

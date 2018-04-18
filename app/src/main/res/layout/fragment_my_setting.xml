@@ -5,10 +5,82 @@
     android:layout_height="match_parent"
     tools:context=".fragment.MySetting">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <ScrollView android:background="#ffffff"
+        android:id="@+id/scrollView1"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="setting" />
+        android:layout_height="wrap_content">
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:stretchColumns="0,1"
+            android:weightSum="1">
+            <TableRow
+            android:id="@+id/trsex"
+            android:clickable="true"
+            android:layout_marginTop="18dp"
+            android:layout_marginBottom="18dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:text="性别"
+                android:textSize="18dp" />
+
+            <TextView
+                android:id="@+id/sex"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:text="男"
+                android:gravity="right"
+                android:textSize="18dp" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20dp"
+                android:gravity="right"
+                android:text=">"
+                android:textSize="20dp" />
+        </TableRow>
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1px"
+                android:background="@color/LightGrey"  />
+            <TableRow
+                android:id="@+id/contacts"
+                android:clickable="true"
+                android:layout_marginTop="18dp"
+                android:layout_marginBottom="18dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:text="紧急联系人"
+                    android:textSize="18dp" />
+
+                <TextView
+                    android:id="@+id/phone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:text="10086"
+                    android:gravity="right"
+                    android:textSize="18dp" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="20dp"
+                    android:gravity="right"
+                    android:text=">"
+                    android:textSize="20dp" />
+            </TableRow>
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1px"
+                android:background="@color/LightGrey"  />
+        </TableLayout>
+    </ScrollView>
 
 </FrameLayout>
