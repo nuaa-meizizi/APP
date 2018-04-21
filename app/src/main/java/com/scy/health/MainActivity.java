@@ -19,17 +19,12 @@ import com.scy.health.fragment.Driving;
 import com.scy.health.fragment.Home;
 import com.scy.health.fragment.MySetting;
 import com.scy.health.util.BaiduWakeUp;
-import com.scy.health.util.GetLocation;
 import com.scy.health.util.PremissionDialog;
 import com.scy.health.util.XfyunASR;
 import com.scy.health.util.XfyunInterface;
 import com.tbruyelle.rxpermissions2.Permission;
 import com.tbruyelle.rxpermissions2.RxPermissions;
-
 import io.reactivex.functions.Consumer;
-
-import static com.scy.health.util.GetLocation.getLocation;
-
 
 public class MainActivity extends AppCompatActivity implements EventListener {
     private BottomNavigationView bottomNavigationView;
