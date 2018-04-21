@@ -19,6 +19,7 @@ import com.scy.health.fragment.Driving;
 import com.scy.health.fragment.Home;
 import com.scy.health.fragment.MySetting;
 import com.scy.health.util.BaiduWakeUp;
+import com.scy.health.util.GetLocation;
 import com.scy.health.util.PremissionDialog;
 import com.scy.health.util.XfyunASR;
 import com.scy.health.util.XfyunInterface;
@@ -26,6 +27,8 @@ import com.tbruyelle.rxpermissions2.Permission;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import io.reactivex.functions.Consumer;
+
+import static com.scy.health.util.GetLocation.getLocation;
 
 
 public class MainActivity extends AppCompatActivity implements EventListener {
@@ -49,11 +52,13 @@ public class MainActivity extends AppCompatActivity implements EventListener {
         baiduWakeUp = new BaiduWakeUp(this, this);
         xfyunASR = new XfyunASR(this);
         baiduWakeUp.start();
-        //底部选择栏
+
+        MultPermission();
+
         initView();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         setTabSelection(0);
-        MultPermission();
+
     }
 
     @Override
@@ -169,11 +174,12 @@ public class MainActivity extends AppCompatActivity implements EventListener {
         }
     }
 
-    /**同时请求多个权限（分别获取结果）的情况*/
     private void MultPermission(){
         RxPermissions rxPermissions = new RxPermissions(MainActivity.this);
         rxPermissions.requestEach(Manifest.permission.RECORD_AUDIO,
-                Manifest.permission.CALL_PHONE)//权限名称，多个权限之间逗号分隔开
+                Manifest.permission.CALL_PHONE,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION)//权限名称，多个权限之间逗号分隔开
                 .subscribe(new Consumer<Permission>(){
                     @Override
                     public void accept(Permission permission){
@@ -184,6 +190,10 @@ public class MainActivity extends AppCompatActivity implements EventListener {
                         if(permission.name.equals(Manifest.permission.CALL_PHONE) && !permission.granted){
                             System.out.println("权限被拒绝");
                             PremissionDialog.showMissingPermissionDialog(context,getString(R.string.LACK_CALL_PHONE));
+                        }
+                        if(permission.name.equals(Manifest.permission.ACCESS_COARSE_LOCATION) && !permission.granted){
+                            System.out.println("权限被拒绝");
+                            PremissionDialog.showMissingPermissionDialog(context,getString(R.string.LACK_LOCATION));
                         }
                     }
                 });

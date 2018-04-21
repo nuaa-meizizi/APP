@@ -18,6 +18,8 @@ import com.github.mikephil.charting.charts.LineChart;
 import com.scy.health.AsyncTasks.localReadDataTask;
 import com.scy.health.R;
 
+import static com.scy.health.util.GetLocation.getLocation;
+
 public class Home extends Fragment {
 
     private LineChart mLineChart;
@@ -36,6 +38,8 @@ public class Home extends Fragment {
         initChartView(view);
         //根据屏幕大小隐藏某些部件
         dynamicChange(view);
+        getLocation(getContext());
+
         return view;
     }
 
