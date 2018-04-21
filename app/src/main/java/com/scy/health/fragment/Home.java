@@ -2,6 +2,7 @@ package com.scy.health.fragment;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -17,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -24,20 +26,18 @@ import android.widget.Toast;
 import com.github.mikephil.charting.charts.LineChart;
 import com.scy.health.AsyncTasks.localReadDataTask;
 import com.scy.health.R;
+import com.scy.health.physicalExamination;
 
 import java.util.List;
 
 public class Home extends Fragment {
 
     private LineChart mLineChart;
-    private LinearLayout linearLayout;
-    private LinearLayout calendar;
-    private LinearLayout chart;
-    private LinearLayout future_wather;
+    private LinearLayout linearLayout,calendar,chart,future_wather;
     private RelativeLayout des;
     private LocationManager locationManager;
-
     private String locationProvider;
+    private Button start;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -45,7 +45,7 @@ public class Home extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         //初始化chartview
-        initChartView(view);
+        initView(view);
         //根据屏幕大小隐藏某些部件
         dynamicChange(view);
         getLocation();
@@ -62,10 +62,17 @@ public class Home extends Fragment {
         }
     }
 
-    public void initChartView(View view) {
-
+    public void initView(View view) {
         mLineChart = (LineChart) view.findViewById(R.id.lineChart);
         new localReadDataTask(mLineChart, view).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
+        start = (Button)view.findViewById(R.id.start);
+        start.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), physicalExamination.class);
+                startActivity(intent);
+            }
+        });
     }
 
     public void dynamicChange(View view) {
