@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,10 +23,11 @@ public class physicalExamination extends AppCompatActivity implements ViewPager.
     List<ImageView> list_pointView = new ArrayList<ImageView>();
     ViewPagerAdapter adapter;
 
-    ImageView img_colorPoint;
-
+    ImageView img_colorPoint,left,right;
     // 两点之间间距
     int pointSpacing;
+
+    int page = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,21 +43,24 @@ public class physicalExamination extends AppCompatActivity implements ViewPager.
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         layout_frame = (FrameLayout) findViewById(R.id.layout_frame);
         layout_point = (LinearLayout) findViewById(R.id.layout_point);
-        LayoutInflater inflater = LayoutInflater.from(this);
-        list_view.add(inflater.inflate(R.layout.fragment_home, null));
-        list_view.add(inflater.inflate(R.layout.fragment_driving, null));
-        list_view.add(inflater.inflate(R.layout.fragment_my_setting, null));
+        for (int i = 0; i < 4; i++){
+            View view = LayoutInflater.from(this).inflate(R.layout.fragment_page,null);
+            TextView txt_num = (TextView)view.findViewById(R.id.txt_num);
+            txt_num.setText(i + "");
+            list_view.add(view);
+        }
         adapter = new ViewPagerAdapter(list_view);
         viewPager.setAdapter(adapter);
         viewPager.setOnPageChangeListener(this);
+
         //添加引导点
         for (int i = 0; i < list_view.size(); i++) {
             ImageView point = new ImageView(this);
             //设置暗点
-            point.setBackgroundResource(R.drawable.drive);
+            point.setBackgroundResource(R.drawable.point);
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT);
-            lp.setMargins(10, 0, 10, 0);
+            lp.setMargins(20, 0, 20, 0);
             point.setLayoutParams(lp);
             list_pointView.add(point);
             layout_point.addView(point);
@@ -64,13 +69,12 @@ public class physicalExamination extends AppCompatActivity implements ViewPager.
         //添加选中的引导点
         img_colorPoint = new ImageView(physicalExamination.this);
         //设置亮点
-        img_colorPoint.setBackgroundResource(R.drawable.home);
+        img_colorPoint.setBackgroundResource(R.drawable.point_fill);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT);
         img_colorPoint.setLayoutParams(lp);
         layout_frame.addView(img_colorPoint);
         layout_frame.post(new Runnable() {
-
             @Override
             public void run() {
                 //待布局绘制完毕  设置选中白点 的初始化位置
@@ -86,6 +90,27 @@ public class physicalExamination extends AppCompatActivity implements ViewPager.
             public void run() {
                 // 获取引导的之间的间隔
                 pointSpacing = layout_point.getChildAt(1).getLeft()- layout_point.getChildAt(0).getLeft();
+            }
+        });
+
+        left = (ImageView)findViewById(R.id.left);
+        right = (ImageView)findViewById(R.id.right);
+        left.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(page!=0){
+                    page--;
+                    viewPager.setCurrentItem(page);
+                }
+            }
+        });
+        right.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(page!=list_view.size()-1){
+                    page++;
+                    viewPager.setCurrentItem(page);
+                }
             }
         });
     }
@@ -106,7 +131,8 @@ public class physicalExamination extends AppCompatActivity implements ViewPager.
     }
 
     @Override
-    public void onPageSelected(int position) {      //
-        System.out.println(position);
+    public void onPageSelected(int position) { 
+        page = position;
     }
+
 }
