@@ -1,4 +1,4 @@
-package com.scy.health;
+package com.scy.health.activities;
 
 import android.Manifest;
 import android.content.Context;
@@ -15,6 +15,7 @@ import com.iflytek.cloud.SpeechUtility;
 import com.luseen.luseenbottomnavigation.BottomNavigation.BottomNavigationItem;
 import com.luseen.luseenbottomnavigation.BottomNavigation.BottomNavigationView;
 import com.luseen.luseenbottomnavigation.BottomNavigation.OnBottomNavigationItemClickListener;
+import com.scy.health.R;
 import com.scy.health.fragment.Driving;
 import com.scy.health.fragment.Home;
 import com.scy.health.fragment.MySetting;

@@ -1,4 +1,4 @@
-package com.scy.health;
+package com.scy.health.activities;
 
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +9,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.scy.health.R;
+import com.scy.health.ViewPagerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -131,7 +134,7 @@ public class physicalExamination extends AppCompatActivity implements ViewPager.
     }
 
     @Override
-    public void onPageSelected(int position) { 
+    public void onPageSelected(int position) {
         page = position;
     }
 

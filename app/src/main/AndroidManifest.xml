@@ -4,6 +4,8 @@
     package="com.scy.health">
 
     <!-- begin: baidu speech sdk  权限 -->
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -42,7 +44,7 @@
             android:exported="false" />
         <!-- end: baidu speech sdk  参数 -->
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.MainActivity"
             android:screenOrientation="landscape"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -52,7 +54,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".physicalExamination"
+            android:name=".activities.physicalExamination"
             android:screenOrientation="landscape"
             android:label="体检报告">
         </activity>

@@ -26,7 +26,7 @@ import android.widget.Toast;
 import com.github.mikephil.charting.charts.LineChart;
 import com.scy.health.AsyncTasks.localReadDataTask;
 import com.scy.health.R;
-import com.scy.health.physicalExamination;
+import com.scy.health.activities.physicalExamination;
 
 import java.util.List;
 
