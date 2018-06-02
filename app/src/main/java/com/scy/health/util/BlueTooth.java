@@ -7,7 +7,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.util.Log;
 import android.widget.Toast;
+
+import com.scy.health.Interface.BluetoothInterface;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,22 +19,27 @@ import java.lang.reflect.Method;
 import java.util.UUID;
 
 public class BlueTooth {
+    public static final String TAG = "BlueTooth";
     private BluetoothSocket BTSocket;
     private Context context;
     private BluetoothAdapter BTAdapter;
     private BluetoothDevice device;
+    private BluetoothInterface bluetoothInterface;
 
-    private BlueTooth(Context context) {
+    public BlueTooth(Context context) {
         this.context = context;
-    }
-
-    public void start(){
         checkBT(context);
         registerBTReceiver();
     }
 
+    public void start(BluetoothInterface bluetoothInterface){
+        this.bluetoothInterface = bluetoothInterface;
+        BTAdapter.startDiscovery();
+    }
+
     public void stop() throws IOException {
-        BTSocket.close();
+        if (BTSocket != null)
+            BTSocket.close();
         unregisterBTReceiver();
 
     }
@@ -49,7 +57,8 @@ public class BlueTooth {
                 context.startActivity(intent);
             }
         } else {
-            System.out.println("本地设备驱动异常!");
+            Log.e(TAG, "checkBT: 本地设备驱动异常!");;
+            Toast.makeText(context,"本地设备驱动异常!",Toast.LENGTH_LONG);
         }
     }
 
@@ -84,10 +93,10 @@ public class BlueTooth {
             String action = intent.getAction();
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                System.out.println("客户端:找到的BT名:" + device.getName());
+                Log.i(TAG, "onReceive: 找到的BT名:" + device.getName());
                 // 如果查找到的设备符合要连接的设备，处理
-                if (device.getName().equalsIgnoreCase("NUAACS")) {
-                    System.out.println("客户端:配对"+device.getName());
+                if (device.getName() != null && device.getName().equalsIgnoreCase("NUAACS")) {
+                    Log.i(TAG, "onReceive: 配对"+device.getName());
                     // 搜索蓝牙设备的过程占用资源比较多，一旦找到需要连接的设备后需要及时关闭搜索
                     BTAdapter.cancelDiscovery();
                     // 获取蓝牙设备的连接状态
@@ -95,21 +104,23 @@ public class BlueTooth {
                     switch (connectState) {
                         // 未配对
                         case BluetoothDevice.BOND_NONE:
-                            System.out.println("客户端:开始配对:");
+                            Log.i(TAG, "onReceive: 开始配对:");
                             try {
                                 Method createBondMethod = BluetoothDevice.class.getMethod("createBond");
                                 createBondMethod.invoke(device);
                             } catch (Exception e) {
+                                bluetoothInterface.onError(e.toString());
                                 e.printStackTrace();
                             }
                             break;
                         // 已配对
                         case BluetoothDevice.BOND_BONDED:
                             try {
-                                System.out.println("客户端:开始连接:");
+                                Log.i(TAG, "onReceive: 开始连接:");
                                 clientThread clientConnectThread = new clientThread();
                                 clientConnectThread.start();
                             } catch (Exception e) {
+                                bluetoothInterface.onError(e.toString());
                                 e.printStackTrace();
                             }
                             break;
@@ -121,15 +132,15 @@ public class BlueTooth {
                 // 已配对
                 if (connectState == BluetoothDevice.BOND_BONDED) {
                     try {
-                        System.out.println("客户端:开始连接:");
+                        Log.i(TAG, "onReceive: 开始连接:");
                         clientThread clientConnectThread = new clientThread();
                         clientConnectThread.start();
                     } catch (Exception e) {
                         e.printStackTrace();
+                        bluetoothInterface.onError(e.toString());
                     }
                 }
             }
-            System.out.println(action);
         }
     };
 
@@ -141,16 +152,17 @@ public class BlueTooth {
             try {
                 BTSocket = device.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
                 //连接
-                System.out.println("客户端:开始连接...");
+                Log.i(TAG, "run: 开始连接...");
                 BTSocket.connect();
-                System.out.println("客户端:连接成功");
-                Toast.makeText(context,"蓝牙连接成功",Toast.LENGTH_SHORT);
+                Log.i(TAG, "run: 连接成功");
                 //启动接受数据
-                System.out.println("客户端:启动接受数据");
+                Log.i(TAG, "run: 启动接受数据");
                 readThread mreadThread = new readThread();
                 mreadThread.start();
+                bluetoothInterface.onSuccess();
             } catch (IOException e) {
-                System.out.println("客户端:连接服务端异常！断开连接重新试一试");
+                Log.i(TAG, "run: 连接服务端异常！断开连接重新试一试");
+                bluetoothInterface.onError("连接服务端异常！断开连接重新试一试");
                 e.printStackTrace();
             }
         }
@@ -196,6 +208,7 @@ public class BlueTooth {
      */
     public void sendMessage(String s) {
         if (BTSocket == null) {
+            Log.e(TAG, "sendMessage: 没有连接");
             Toast.makeText(context, "没有连接", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -203,7 +216,7 @@ public class BlueTooth {
             OutputStream os = BTSocket.getOutputStream();
             os.write(s.getBytes());
             os.flush();
-            System.out.println("客户端:发送信息成功");
+            Log.i(TAG, "sendMessage: 发送信息成功");
         } catch (IOException e) {
             e.printStackTrace();
         }

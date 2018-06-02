@@ -22,7 +22,7 @@ import com.scy.health.fragment.MySetting;
 import com.scy.health.util.BaiduWakeUp;
 import com.scy.health.util.PremissionDialog;
 import com.scy.health.util.XfyunASR;
-import com.scy.health.util.XfyunInterface;
+import com.scy.health.Interface.XfyunInterface;
 import com.tbruyelle.rxpermissions2.Permission;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import io.reactivex.functions.Consumer;

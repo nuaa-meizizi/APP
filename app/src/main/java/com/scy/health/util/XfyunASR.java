@@ -17,6 +17,7 @@ import com.iflytek.cloud.SpeechSynthesizer;
 import com.iflytek.cloud.SynthesizerListener;
 import com.iflytek.cloud.ui.RecognizerDialog;
 import com.iflytek.cloud.ui.RecognizerDialogListener;
+import com.scy.health.Interface.XfyunInterface;
 import com.scy.health.R;
 
 import org.json.JSONException;

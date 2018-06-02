@@ -1,4 +1,4 @@
-package com.scy.health.util;
+package com.scy.health.Interface;
 
 public interface XfyunInterface {
     //语音识别回调

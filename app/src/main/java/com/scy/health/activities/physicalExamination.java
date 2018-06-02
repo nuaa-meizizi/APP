@@ -1,45 +1,64 @@
 package com.scy.health.activities;
 
+import android.content.Context;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.scy.health.Interface.BluetoothInterface;
 import com.scy.health.R;
 import com.scy.health.ViewPagerAdapter;
+import com.scy.health.util.BlueTooth;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
-public class physicalExamination extends AppCompatActivity implements ViewPager.OnPageChangeListener {
+public class physicalExamination extends AppCompatActivity implements ViewPager.OnPageChangeListener,BluetoothInterface {
+    private static final String TAG = "physicalExamination";
     private ViewPager viewPager;
+    private Context context;
     private FrameLayout layout_frame;
     LinearLayout layout_point;
     private List<View> list_view = new ArrayList<View>();
     List<ImageView> list_pointView = new ArrayList<ImageView>();
     ViewPagerAdapter adapter;
-
+    BlueTooth blueTooth;
     ImageView img_colorPoint,left,right;
     // 两点之间间距
     int pointSpacing;
+    private Boolean ready = false;
 
     int page = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_physical_examination);
-
+        context = this;
         new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE)
                 .setContentText("体检中")
                 .show();
+
         initView();
+
+        blueTooth = new BlueTooth(this);
+
+        blueTooth.start(this);
+
+        if (ready) {
+            Log.i(TAG, "onCreate: 我没发送");
+            blueTooth.sendMessage("0");
+        }
     }
 
     public void initView(){
@@ -119,6 +138,18 @@ public class physicalExamination extends AppCompatActivity implements ViewPager.
     }
 
     @Override
+    public void onDestroy() {
+        if (blueTooth != null) {
+            try {
+                blueTooth.stop();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        super.onDestroy();
+    }
+
+    @Override
     public void onPageScrollStateChanged(int arg0) {
     }
 
@@ -138,4 +169,16 @@ public class physicalExamination extends AppCompatActivity implements ViewPager.
         page = position;
     }
 
+    @Override
+    public void onSuccess() {
+        Toast.makeText(context,"蓝牙连接成功",Toast.LENGTH_LONG).show();
+        Log.i(TAG, "onSuccess: 蓝牙连接成功");
+        ready = true;
+    }
+
+    @Override
+    public void onError(String errorData) {
+        Toast.makeText(context,errorData,Toast.LENGTH_LONG).show();
+        ready = false;
+    }
 }
