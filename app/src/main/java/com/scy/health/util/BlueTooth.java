@@ -25,6 +25,9 @@ public class BlueTooth {
     private BluetoothAdapter BTAdapter;
     private BluetoothDevice device;
     private BluetoothInterface bluetoothInterface;
+    private StringBuffer cache = new StringBuffer();
+    private int start;
+    private int end;
 
     public BlueTooth(Context context) {
         this.context = context;
@@ -188,8 +191,17 @@ public class BlueTooth {
                         for (int i = 0; i < bytes; i++) {
                             buf_data[i] = buffer[i];
                         }
-                        String s = new String(buf_data);
-                        System.out.println(s);
+                        //String s = new String(buf_data);
+                        cache.append(new String(buf_data));        //拼接
+//                        Log.e(TAG, "run: "+cache );
+                        if (cache.indexOf("{")!=-1)
+                            start = cache.indexOf("{");
+                        if (cache.indexOf("}")!=-1) {
+                            end = cache.indexOf("}");
+                            String data = cache.substring(start+1,end);
+                            cache = new StringBuffer(cache.substring(end+1));     //cache去掉已被返回的数据
+                            bluetoothInterface.onReceive(data);
+                        }
                     }
                 } catch (IOException e) {
                     try {

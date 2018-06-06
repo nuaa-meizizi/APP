@@ -171,7 +171,6 @@ public class physicalExamination extends AppCompatActivity implements ViewPager.
 
     @Override
     public void onSuccess() {
-        Toast.makeText(context,"蓝牙连接成功",Toast.LENGTH_LONG).show();
         Log.i(TAG, "onSuccess: 蓝牙连接成功");
         ready = true;
     }
@@ -180,5 +179,10 @@ public class physicalExamination extends AppCompatActivity implements ViewPager.
     public void onError(String errorData) {
         Toast.makeText(context,errorData,Toast.LENGTH_LONG).show();
         ready = false;
+    }
+
+    @Override
+    public void onReceive(String Data) {
+        System.out.println("--------------------------------"+Data);
     }
 }
