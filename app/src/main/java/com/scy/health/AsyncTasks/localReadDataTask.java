@@ -20,12 +20,12 @@ import java.util.List;
 
 import static com.scy.health.dataInterface.senserData.physicalExamination;
 
+//从本地读取历史数据
 public class localReadDataTask extends AsyncTask <String, Void, JSONObject>{
     private LineChart mLineChart;
     private View view;
 
-    public localReadDataTask(LineChart mLineChart,
-                             View view)
+    public localReadDataTask(LineChart mLineChart,View view)
     {
         this.mLineChart = mLineChart;
         this.view = view;

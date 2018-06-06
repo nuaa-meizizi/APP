@@ -19,7 +19,7 @@ import java.lang.reflect.Method;
 import java.util.UUID;
 
 public class BlueTooth {
-    public static final String TAG = "BlueTooth";
+    private static final String TAG = "BlueTooth";
     private BluetoothSocket BTSocket;
     private Context context;
     private BluetoothAdapter BTAdapter;
@@ -193,7 +193,7 @@ public class BlueTooth {
                         }
                         //String s = new String(buf_data);
                         cache.append(new String(buf_data));        //拼接
-//                        Log.e(TAG, "run: "+cache );
+                        Log.e(TAG, "run: "+cache );
                         if (cache.indexOf("{")!=-1)
                             start = cache.indexOf("{");
                         if (cache.indexOf("}")!=-1) {
@@ -202,6 +202,8 @@ public class BlueTooth {
                             cache = new StringBuffer(cache.substring(end+1));     //cache去掉已被返回的数据
                             bluetoothInterface.onReceive(data);
                         }
+                        if (cache.length() > 10000)
+                            cache = new StringBuffer();//清空
                     }
                 } catch (IOException e) {
                     try {
