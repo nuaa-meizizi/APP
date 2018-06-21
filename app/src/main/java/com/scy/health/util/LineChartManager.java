@@ -16,6 +16,9 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Collections.max;
+import static java.util.Collections.min;
+
 public class LineChartManager {
 
     private LineChart lineChart;
@@ -108,6 +111,7 @@ public class LineChartManager {
         LineData data = new LineData(dataSets);
         //设置X轴的刻度数
         xAxis.setLabelCount(xAxisValues.size(), true);
+        setYAxis(max(yAxisValues)+2,min(yAxisValues)-2);
         lineChart.setData(data);
     }
 
@@ -145,19 +149,18 @@ public class LineChartManager {
      *
      * @param max
      * @param min
-     * @param labelCount
      */
-    public void setYAxis(float max, float min, int labelCount) {
+    public void setYAxis(float max, float min) {
         if (max < min) {
             return;
         }
         leftAxis.setAxisMaximum(max);
         leftAxis.setAxisMinimum(min);
-        leftAxis.setLabelCount(labelCount, false);
+//        leftAxis.setLabelCount(labelCount, false);
 
         rightAxis.setAxisMaximum(max);
         rightAxis.setAxisMinimum(min);
-        rightAxis.setLabelCount(labelCount, false);
+//        rightAxis.setLabelCount(labelCount, false);
         lineChart.invalidate();
     }
 

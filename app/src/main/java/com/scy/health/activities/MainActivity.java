@@ -15,6 +15,7 @@ import com.iflytek.cloud.SpeechUtility;
 import com.luseen.luseenbottomnavigation.BottomNavigation.BottomNavigationItem;
 import com.luseen.luseenbottomnavigation.BottomNavigation.BottomNavigationView;
 import com.luseen.luseenbottomnavigation.BottomNavigation.OnBottomNavigationItemClickListener;
+import com.scy.health.Interface.XfyunInterface;
 import com.scy.health.R;
 import com.scy.health.fragment.Driving;
 import com.scy.health.fragment.Home;
@@ -22,9 +23,9 @@ import com.scy.health.fragment.MySetting;
 import com.scy.health.util.BaiduWakeUp;
 import com.scy.health.util.PremissionDialog;
 import com.scy.health.util.XfyunASR;
-import com.scy.health.Interface.XfyunInterface;
 import com.tbruyelle.rxpermissions2.Permission;
 import com.tbruyelle.rxpermissions2.RxPermissions;
+
 import io.reactivex.functions.Consumer;
 
 public class MainActivity extends AppCompatActivity implements EventListener {
@@ -37,8 +38,6 @@ public class MainActivity extends AppCompatActivity implements EventListener {
     private MySetting setting;
     private TextView title;
     private Context context;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,9 +51,7 @@ public class MainActivity extends AppCompatActivity implements EventListener {
         MultPermission();
 
         initView();
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         setTabSelection(0);
-
     }
 
     @Override
@@ -194,6 +191,5 @@ public class MainActivity extends AppCompatActivity implements EventListener {
                     }
                 });
     }
-
 
 }

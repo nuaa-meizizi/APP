@@ -2,26 +2,20 @@ package com.scy.health.activities;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.scy.health.AsyncTasks.getBlueToothDataTask;
-import com.scy.health.AsyncTasks.localReadDataTask;
-import com.scy.health.Interface.BluetoothInterface;
 import com.scy.health.R;
 import com.scy.health.ViewPagerAdapter;
-import com.scy.health.util.BlueTooth;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,12 +44,14 @@ public class physicalExamination extends AppCompatActivity implements ViewPager.
         sweetAlertDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE)
                 .setContentText("体检中");
         sweetAlertDialog.show();
-
+        sweetAlertDialog.setCancelable(false);
+        getData();
         initView();
+    }
 
+    public void getData(){
         getBlueToothDataTask = new getBlueToothDataTask(context,sweetAlertDialog);
         getBlueToothDataTask.execute();
-
     }
 
     public void initView(){

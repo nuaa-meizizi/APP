@@ -1,63 +1,91 @@
 package com.scy.health.AsyncTasks;
 
-import android.graphics.Bitmap;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.scy.health.R;
 import com.scy.health.util.LineChartManager;
 
 import org.angmarch.views.NiceSpinner;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import static com.scy.health.dataInterface.senserData.physicalExamination;
+import static com.scy.health.util.SharedPreferencesDataBase.selectAll;
 
 //从本地读取历史数据
 public class localReadDataTask extends AsyncTask <String, Void, JSONObject>{
+    private static final String TAG = "localReadDataTask";
     private LineChart mLineChart;
     private View view;
+    private Context context;
 
-    public localReadDataTask(LineChart mLineChart,View view)
+    public localReadDataTask(Context context,LineChart mLineChart, View view)
     {
         this.mLineChart = mLineChart;
         this.view = view;
+        this.context = context;
+
     }
 
     @Override
     protected JSONObject doInBackground(String... strings) {
-        return physicalExamination();
+        return selectAll(context,5);
     }
 
     @Override
     protected void onPostExecute(JSONObject result){
+        Log.e(TAG, "onPostExecute: "+result );
+
         final LineChartManager lineChartManager1 = new LineChartManager(mLineChart);
         //设置x轴的数据
         final ArrayList<Float> xValues = new ArrayList<>();
-        for (int i = 0; i <= 10; i++) {
-            xValues.add((float) i);
-        }
-        //设置y轴的数据()
         final List<List<Float>> yValues = new ArrayList<>();
-        for (int i = 0; i < 4; i++) {
-            List<Float> yValue = new ArrayList<>();
-            for (int j = 0; j <= 10; j++) {
-                yValue.add((float) (Math.random() * 80));
+        TextView latest_date = (TextView)view.findViewById(R.id.latest_date);
+
+        try {
+            JSONArray records = result.getJSONArray("data");
+            if (records.length() == 0) {
+                latest_date.setText("最近更新：无");
+                return;
             }
-            yValues.add(yValue);
+            String format = "MM-dd HH:mm:ss";
+            SimpleDateFormat sdf = new SimpleDateFormat(format);
+            String date = sdf.format(new Date((Long)records.getJSONObject(records.length()-1).get("time")));
+            latest_date.setText("最近更新："+date);
+            for (int i = 0; i < records.length(); i++) {
+                xValues.add((float) i);
+            }
+
+            List<Float> yValue_heartbeat = new ArrayList<>();
+            for (int i = 0; i < records.length(); i++) {
+                yValue_heartbeat.add((float)records.getJSONObject(i).getDouble("heartbeat"));
+            }
+            yValues.add(yValue_heartbeat);
+
+            List<Float> yValue_temperature = new ArrayList<>();
+            for (int i = 0; i < records.length(); i++) {
+                yValue_temperature.add((float) records.getJSONObject(i).getDouble("temperature"));
+            }
+            yValues.add(yValue_temperature);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-        List<Float> yValue = new ArrayList<>();
-        for (int j = 0; j <= 10; j++) {
-            yValue.add((float) (Math.random() * 1000));
-        }
-        yValues.add(yValue);
+
+
         final List<Integer> colours = new ArrayList<>();
         colours.add(Color.GREEN);
         colours.add(Color.BLUE);
@@ -66,11 +94,8 @@ public class localReadDataTask extends AsyncTask <String, Void, JSONObject>{
         colours.add(Color.YELLOW);
         //线的名字集合
         final List<String> names = new ArrayList<>();
+        names.add("心率");
         names.add("体温");
-        names.add("体重");
-        names.add("心跳");
-        names.add("血压");
-        names.add("血脂");
 
         lineChartManager1.showLineChart(xValues, yValues, names, colours);
        //lineChartManager1.setYAxis(100, 0, 11);
@@ -78,7 +103,7 @@ public class localReadDataTask extends AsyncTask <String, Void, JSONObject>{
 
 
         NiceSpinner niceSpinner = (NiceSpinner) view.findViewById(R.id.nice_spinner);
-        LinkedList<String> data=new LinkedList<>(Arrays.asList("所有指标","体温", "体重", "心跳", "血压","血脂"));
+        LinkedList<String> data=new LinkedList<>(Arrays.asList("所有指标","心率","体温"));
         niceSpinner.attachDataSource(data);
         niceSpinner.addOnItemClickListener(new AdapterView.OnItemClickListener(){
 

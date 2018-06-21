@@ -31,7 +31,7 @@ import com.scy.health.activities.physicalExamination;
 import java.util.List;
 
 public class Home extends Fragment {
-
+    private Context context;
     private LineChart mLineChart;
     private LinearLayout linearLayout,calendar,chart,future_wather;
     private RelativeLayout des;
@@ -45,11 +45,11 @@ public class Home extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         //初始化chartview
+        context = getContext();
         initView(view);
         //根据屏幕大小隐藏某些部件
         dynamicChange(view);
         getLocation();
-
         return view;
     }
 
@@ -64,7 +64,7 @@ public class Home extends Fragment {
 
     public void initView(View view) {
         mLineChart = (LineChart) view.findViewById(R.id.lineChart);
-        new localReadDataTask(mLineChart, view).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
+        new localReadDataTask(context,mLineChart,view).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
         start = (Button)view.findViewById(R.id.start);
         start.setOnClickListener(new View.OnClickListener() {
             @Override

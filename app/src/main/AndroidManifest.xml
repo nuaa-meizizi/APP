@@ -17,6 +17,7 @@
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <!-- end: baidu speech sdk  权限 -->
     <application
@@ -55,6 +56,7 @@
         </activity>
         <activity
             android:name=".activities.physicalExamination"
+            android:parentActivityName=".activities.MainActivity"
             android:screenOrientation="landscape"
             android:label="体检报告">
         </activity>
