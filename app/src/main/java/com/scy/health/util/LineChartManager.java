@@ -110,6 +110,7 @@ public class LineChartManager {
         dataSets.add(lineDataSet);
         LineData data = new LineData(dataSets);
         //设置X轴的刻度数
+        xAxis.setEnabled(false);
         xAxis.setLabelCount(xAxisValues.size(), true);
         setYAxis(max(yAxisValues)+2,min(yAxisValues)-2);
         lineChart.setData(data);
@@ -135,11 +136,11 @@ public class LineChartManager {
                 entries.add(new Entry(xAxisValues.get(j), yAxisValues.get(i).get(j)));
             }
             LineDataSet lineDataSet = new LineDataSet(entries, labels.get(i));
-
             initLineDataSet(lineDataSet, colours.get(i), false);
             dataSets.add(lineDataSet);
         }
         LineData data = new LineData(dataSets);
+        xAxis.setEnabled(false);
         xAxis.setLabelCount(xAxisValues.size(), true);
         lineChart.setData(data);
     }

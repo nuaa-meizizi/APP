@@ -2,6 +2,7 @@ package com.scy.health.AsyncTasks;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
@@ -15,11 +16,17 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.mikephil.charting.charts.LineChart;
 import com.scy.health.Interface.BluetoothInterface;
 import com.scy.health.R;
 import com.scy.health.ViewPagerAdapter;
 import com.scy.health.activities.PhysicalExamination;
 import com.scy.health.util.BlueTooth;
+import com.scy.health.util.LineChartManager;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,6 +38,8 @@ import java.util.TimerTask;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
 import static com.scy.health.util.SharedPreferencesDataBase.insert;
+import static com.scy.health.util.SharedPreferencesDataBase.selectHeartBeat;
+import static com.scy.health.util.SharedPreferencesDataBase.selectTemperature;
 
 
 public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  implements ViewPager.OnPageChangeListener{
@@ -52,13 +61,14 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
     ImageView img_colorPoint,left,right;
     // 两点之间间距
     int pointSpacing;
+    Boolean concection_ok = false;
     int page = 0;
 
     private Handler handler = new Handler(){
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 1:
-                    if (!ready) {
+                    if (!concection_ok) {
                         //数据读取完毕，ready了就不退出了
                         sweetAlertDialog.cancel();
                         Toast.makeText(context, "超时，请检查设备连接", Toast.LENGTH_SHORT).show();
@@ -90,6 +100,7 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
             @Override
             public void onSuccess() {
                 Log.i(TAG, "onSuccess: 蓝牙连接成功");
+                concection_ok = true;
             }
 
             @Override
@@ -110,7 +121,7 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
             }
         }
         my_cancel();
-        return res;
+        return null;
     }
 
     public void handleData(String data){
@@ -140,9 +151,8 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
         temperature = Float.valueOf(values[0]);
         heartbeat = Integer.valueOf(values[1]);
         Log.i(TAG, "onPostExecute: 温度："+temperature+" 心跳："+heartbeat);
-        initView(temperature,heartbeat);
-
         insert(context,temperature,heartbeat);            //新添一条体检记录
+        initView(temperature,heartbeat);
         sweetAlertDialog.cancel();
     }
 
@@ -165,24 +175,54 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
                 message.what = 1;
                 handler.sendMessage(message);
             }
-        }, 60000);// 60s后超时关闭
+        }, 20000);// 20s后超时关闭
     }
 
     private void initView(float temperature,int heartbeat){
         viewPager = (ViewPager) activity.findViewById(R.id.viewPager);
         layout_frame = (FrameLayout) activity.findViewById(R.id.layout_frame);
         layout_point = (LinearLayout) activity.findViewById(R.id.layout_point);
-
         viewPager.setOnPageChangeListener(this);
-
         viewPager = (ViewPager) activity.findViewById(R.id.viewPager);
+
+        ArrayList<Float> xValues = new ArrayList<>();
+        List<Float> yValue_temperature = new ArrayList<>();
+        List<Float> yValue_heartbeat = new ArrayList<>();
+
+        try {
+            JSONArray res = selectTemperature(context,5).getJSONArray("data");
+            Log.i(TAG, "initView: "+res);
+            for (int i = 0; i < res.length(); i++) {
+                xValues.add((float) i);
+                yValue_temperature.add((float)(res.getDouble(i)));
+            }
+            res = selectHeartBeat(context,5).getJSONArray("data");
+            Log.i(TAG, "initView: "+res);
+            for (int i = 0; i < res.length(); i++) {
+                yValue_heartbeat.add((float)(res.getInt(i)));
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         //设置温度页
         View view_temperature = LayoutInflater.from(context).inflate(R.layout.fragment_page,null);
+        LineChartManager history_temperature = new LineChartManager((LineChart)view_temperature.findViewById(R.id.history));
+        history_temperature.showLineChart(xValues,yValue_temperature,"体温", Color.BLUE);
+        history_temperature.setHightLimitLine((float) 38.5,"正常体温:38.5",Color.RED);
+        history_temperature.setDescription("体温趋势图");
+
         TextView txt_num = (TextView)view_temperature.findViewById(R.id.txt_num);
         txt_num.setText(Float.toString(temperature));
         list_view.add(view_temperature);
         //设置心跳页
         View view_heartbeat = LayoutInflater.from(context).inflate(R.layout.fragment_page,null);
+        LineChartManager history_heartbeat = new LineChartManager((LineChart)view_heartbeat.findViewById(R.id.history));
+        history_heartbeat.showLineChart(xValues,yValue_heartbeat,"心率", Color.BLUE);
+        history_heartbeat.setHightLimitLine((float) 88,"正常心率:88",Color.RED);
+        history_heartbeat.setDescription("心率趋势图");
+
         TextView txt_num2 = (TextView)view_heartbeat.findViewById(R.id.txt_num);
         txt_num2.setText(Integer.toString(heartbeat));
         list_view.add(view_heartbeat);

@@ -42,6 +42,46 @@ public class SharedPreferencesDataBase {
         }
     }
 
+    public static JSONObject selectTemperature(Context context,int N){
+        JSONArray temperatures = new JSONArray();
+        SharedPreferences sp = context.getSharedPreferences("health", Context.MODE_PRIVATE);
+        Set<String> ids = new HashSet<String>(sp.getStringSet("records", new HashSet<String>()));
+        List<String> idsList = new ArrayList<>(ids);
+        Collections.sort(idsList);
+        int start = idsList.size()-N > 0?idsList.size()-N:0;
+        idsList = idsList.subList(start,idsList.size());
+        try {
+            for (String id : idsList) {
+                float temperature = sp.getFloat("temperature_"+id,0);
+                temperatures.put(temperature);
+            }
+            return new JSONObject().put("data",temperatures).put("status",1);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static JSONObject selectHeartBeat(Context context,int N){
+        JSONArray heartbeats = new JSONArray();
+        SharedPreferences sp = context.getSharedPreferences("health", Context.MODE_PRIVATE);
+        Set<String> ids = new HashSet<String>(sp.getStringSet("records", new HashSet<String>()));
+        List<String> idsList = new ArrayList<>(ids);
+        Collections.sort(idsList);
+        int start = idsList.size()-N > 0?idsList.size()-N:0;
+        idsList = idsList.subList(start,idsList.size());
+        try {
+            for (String id : idsList) {
+                int temperature = sp.getInt("heartbeat_"+id,0);
+                heartbeats.put(temperature);
+            }
+            return new JSONObject().put("data",heartbeats).put("status",1);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public static boolean insert(Context context,float temperature,int heartbeat){
         SharedPreferences sp = context.getSharedPreferences("health", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();

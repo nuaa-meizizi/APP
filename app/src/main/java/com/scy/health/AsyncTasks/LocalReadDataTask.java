@@ -96,10 +96,7 @@ public class LocalReadDataTask extends AsyncTask <String, Void, JSONObject>{
         names.add("体温");
 
         lineChartManager1.showLineChart(xValues, yValues, names, colours);
-       //lineChartManager1.setYAxis(100, 0, 11);
         lineChartManager1.setDescription("指标趋势图");
-
-
         NiceSpinner niceSpinner = (NiceSpinner) view.findViewById(R.id.nice_spinner);
         LinkedList<String> data=new LinkedList<>(Arrays.asList("所有指标","心率","体温"));
         niceSpinner.attachDataSource(data);

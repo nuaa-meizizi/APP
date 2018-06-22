@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".activities.PhysicalExamination">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_weight="1"
         android:orientation="horizontal"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp">
@@ -32,7 +34,6 @@
 
     </LinearLayout>
 
-
     <FrameLayout
         android:id="@+id/layout_frame"
         android:layout_width="match_parent"
@@ -47,6 +48,4 @@
             android:orientation="horizontal" >
         </LinearLayout>
     </FrameLayout>
-
-
-</RelativeLayout>
+</LinearLayout>
