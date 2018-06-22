@@ -193,7 +193,7 @@ public class BlueTooth {
                         }
                         //String s = new String(buf_data);
                         cache.append(new String(buf_data));        //拼接
-                        Log.e(TAG, "run: "+cache );
+//                        Log.e(TAG, "run: "+cache );
                         if (cache.indexOf("{")!=-1)
                             start = cache.indexOf("{");
                         if (cache.indexOf("}")!=-1) {

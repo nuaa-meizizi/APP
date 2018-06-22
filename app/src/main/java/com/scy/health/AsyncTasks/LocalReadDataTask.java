@@ -48,7 +48,7 @@ public class LocalReadDataTask extends AsyncTask <String, Void, JSONObject>{
 
     @Override
     protected void onPostExecute(JSONObject result){
-        Log.e(TAG, "onPostExecute: "+result );
+        Log.i(TAG, "onPostExecute: "+result );
 
         final LineChartManager lineChartManager1 = new LineChartManager(mLineChart);
         //设置x轴的数据
@@ -84,8 +84,6 @@ public class LocalReadDataTask extends AsyncTask <String, Void, JSONObject>{
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-
         final List<Integer> colours = new ArrayList<>();
         colours.add(Color.GREEN);
         colours.add(Color.BLUE);
@@ -109,9 +107,10 @@ public class LocalReadDataTask extends AsyncTask <String, Void, JSONObject>{
 
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                if (i == 0)
+                if (i == 0) {
                     lineChartManager1.showLineChart(xValues, yValues, names, colours);
-                else
+                    Log.i(TAG, "onItemClick: "+yValues);
+                }else
                     lineChartManager1.showLineChart(xValues, yValues.get(i-1), names.get(i-1), colours.get(i-1));
             }
         } );

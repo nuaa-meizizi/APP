@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.scy.health.Interface.BluetoothInterface;
 import com.scy.health.R;
 import com.scy.health.ViewPagerAdapter;
 import com.scy.health.activities.PhysicalExamination;
@@ -80,41 +81,41 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
 
     @Override
     protected String doInBackground(String... strings) {
-//        if (isCancelled()){
-//            my_cancel();
-//            return null;
-//        }
-//        blueTooth = new BlueTooth(context);
-//        blueTooth.start(new BluetoothInterface() {
-//            @Override
-//            public void onSuccess() {
-//                Log.i(TAG, "onSuccess: 蓝牙连接成功");
-//            }
-//
-//            @Override
-//            public void onError(String errorData) {
-//                Log.e(TAG, "onError: "+errorData);
-//            }
-//
-//            @Override
-//            public void onReceive(String data) {
-//                System.out.println("----------------------------:"+data);
-//                handleData(data);
-//            }
-//        });
-//        while (!ready){
-//            if (isCancelled()){
-//                my_cancel();
-//                return null;
-//            }
-//        }
-//        my_cancel();
+        if (isCancelled()){
+            my_cancel();
+            return null;
+        }
+        blueTooth = new BlueTooth(context);
+        blueTooth.start(new BluetoothInterface() {
+            @Override
+            public void onSuccess() {
+                Log.i(TAG, "onSuccess: 蓝牙连接成功");
+            }
+
+            @Override
+            public void onError(String errorData) {
+                Log.e(TAG, "onError: "+errorData);
+            }
+
+            @Override
+            public void onReceive(String data) {
+                System.out.println("----------------------------:"+data);
+                handleData(data);
+            }
+        });
+        while (!ready){
+            if (isCancelled()){
+                my_cancel();
+                return null;
+            }
+        }
+        my_cancel();
         return res;
     }
 
     public void handleData(String data){
         count++;
-        if (count == 10) {
+        if (count == 100) {
             res = data;
             ready = true;       //数据处理完毕
         }
@@ -122,8 +123,8 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
 
     @Override
     protected void onPostExecute(String result) {
-        res = Float.toString(new Random().nextInt(40-36)+36)+" "+Integer.toString(new Random().nextInt(85-70)+70);
-        ready = true;
+//        res = Float.toString(new Random().nextInt(40-36)+36)+" "+Integer.toString(new Random().nextInt(85-70)+70);
+//        ready = true;
         if (res == null) {
             Log.e(TAG, "onPostExecute: res返回空值");
             return;
@@ -164,7 +165,7 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
                 message.what = 1;
                 handler.sendMessage(message);
             }
-        }, 20000);// 20s后超时关闭
+        }, 60000);// 60s后超时关闭
     }
 
     private void initView(float temperature,int heartbeat){
