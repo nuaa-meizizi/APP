@@ -27,13 +27,13 @@ import java.util.List;
 import static com.scy.health.util.SharedPreferencesDataBase.selectAll;
 
 //从本地读取历史数据
-public class localReadDataTask extends AsyncTask <String, Void, JSONObject>{
+public class LocalReadDataTask extends AsyncTask <String, Void, JSONObject>{
     private static final String TAG = "localReadDataTask";
     private LineChart mLineChart;
     private View view;
     private Context context;
 
-    public localReadDataTask(Context context,LineChart mLineChart, View view)
+    public LocalReadDataTask(Context context,LineChart mLineChart, View view)
     {
         this.mLineChart = mLineChart;
         this.view = view;
@@ -72,7 +72,7 @@ public class localReadDataTask extends AsyncTask <String, Void, JSONObject>{
 
             List<Float> yValue_heartbeat = new ArrayList<>();
             for (int i = 0; i < records.length(); i++) {
-                yValue_heartbeat.add((float)records.getJSONObject(i).getDouble("heartbeat"));
+                yValue_heartbeat.add((float)records.getJSONObject(i).getInt("heartbeat"));
             }
             yValues.add(yValue_heartbeat);
 

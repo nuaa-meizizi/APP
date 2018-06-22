@@ -29,7 +29,7 @@ public class SharedPreferencesDataBase {
                 JSONObject tmp = new JSONObject();
                 long time = sp.getLong("time_"+id,0);
                 float temperature = sp.getFloat("temperature_"+id,0);
-                float heartbeat = sp.getFloat("heartbeat_"+id,0);
+                int heartbeat = sp.getInt("heartbeat_"+id,0);
                 tmp.put("time",time);
                 tmp.put("temperature",temperature);
                 tmp.put("heartbeat",heartbeat);
@@ -42,7 +42,7 @@ public class SharedPreferencesDataBase {
         }
     }
 
-    public static boolean insert(Context context,float temperature,float heartbeat){
+    public static boolean insert(Context context,float temperature,int heartbeat){
         SharedPreferences sp = context.getSharedPreferences("health", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         Set<String> records = new HashSet<String>(sp.getStringSet("records", new HashSet<String>()));
@@ -51,7 +51,7 @@ public class SharedPreferencesDataBase {
         editor.putStringSet("records",records);
         editor.putLong("time_"+id,System.currentTimeMillis());
         editor.putFloat("temperature_"+id,temperature);
-        editor.putFloat("heartbeat_"+id,heartbeat);
+        editor.putInt("heartbeat_"+id,heartbeat);
         editor.apply();
         return true;
     }

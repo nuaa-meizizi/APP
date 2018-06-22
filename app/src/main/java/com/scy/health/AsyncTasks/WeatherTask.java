@@ -5,7 +5,7 @@ import android.os.AsyncTask;
 import org.json.JSONObject;
 
 //获取天气信息
-public class weatherTask extends AsyncTask<String, Void, JSONObject> {
+public class WeatherTask extends AsyncTask<String, Void, JSONObject> {
     public void weatherTask(){
 
     }

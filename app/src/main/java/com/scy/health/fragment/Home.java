@@ -24,9 +24,9 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.LineChart;
-import com.scy.health.AsyncTasks.localReadDataTask;
+import com.scy.health.AsyncTasks.LocalReadDataTask;
 import com.scy.health.R;
-import com.scy.health.activities.physicalExamination;
+import com.scy.health.activities.PhysicalExamination;
 
 import java.util.List;
 
@@ -64,12 +64,12 @@ public class Home extends Fragment {
 
     public void initView(View view) {
         mLineChart = (LineChart) view.findViewById(R.id.lineChart);
-        new localReadDataTask(context,mLineChart,view).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
+        new LocalReadDataTask(context,mLineChart,view).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
         start = (Button)view.findViewById(R.id.start);
         start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getContext(), physicalExamination.class);
+                Intent intent = new Intent(getContext(), PhysicalExamination.class);
                 startActivity(intent);
             }
         });
