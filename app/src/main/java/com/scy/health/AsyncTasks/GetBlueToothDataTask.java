@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -15,20 +16,18 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.LineChart;
-import com.scy.health.Interface.BluetoothInterface;
+import com.scy.health.Interface.DataBroadcastInterface;
 import com.scy.health.R;
 import com.scy.health.ViewPagerAdapter;
-import com.scy.health.activities.PhysicalExamination;
 import com.scy.health.util.BlueTooth;
+import com.scy.health.util.DataBroadcast;
 import com.scy.health.util.LineChartManager;
 import com.scy.health.util.XfyunASR;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,25 +35,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
-import static com.scy.health.util.SharedPreferencesDataBase.insert;
 import static com.scy.health.util.SharedPreferencesDataBase.selectHeartBeat;
 import static com.scy.health.util.SharedPreferencesDataBase.selectTemperature;
 
-public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  implements ViewPager.OnPageChangeListener{
+public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  implements ViewPager.OnPageChangeListener,DataBroadcastInterface {
     private static final String TAG = "GetBlueToothDataTask";
-    private Boolean ready = false;
     private Context context;
     private Activity activity;
     private BlueTooth blueTooth;
-    private String res = null;
-    private int count;
+    private int count;          //接受数据次数
     private SweetAlertDialog sweetAlertDialog;
-    private GetBlueToothDataTask myself;
     private ViewPager viewPager;
     private FrameLayout layout_frame;
     private LinearLayout layout_point;
@@ -64,22 +57,21 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
     private ImageView img_colorPoint,left,right;
     // 两点之间间距
     private int pointSpacing;
-    private Boolean concection_ok = false;
+    private DataBroadcast dataBroadcast;
     private int page = 0;
     private XfyunASR xfyunASR;
     private boolean radioOn;        //是否开启语音播报
     private Set<Integer> hasAnnounced = new HashSet<Integer>();
 
+    private float temperature;
+    private int heartbeat;
+
     private Handler handler = new Handler(){
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 1:
-                    if (!concection_ok) {
-                        //数据读取完毕，ready了就不退出了
-                        sweetAlertDialog.cancel();
-                        Toast.makeText(context, "超时，请检查设备连接", Toast.LENGTH_SHORT).show();
-                        myself.cancel(true);        //取消异步任务
-                    }
+                    initView(temperature,heartbeat);
+                    sweetAlertDialog.cancel();
                     break;
             }
             super.handleMessage(msg);
@@ -91,8 +83,6 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
         this.context = context;
         this.activity = (Activity)context;
         this.sweetAlertDialog = sweetAlertDialog;
-        timeoutClosing();       //超时自动关闭
-        this.myself = this;
         this.xfyunASR = xfyunASR;
         SharedPreferences sp = context.getSharedPreferences("health", Context.MODE_PRIVATE);
         this.radioOn = sp.getBoolean("radio",false);
@@ -101,69 +91,14 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
 
     @Override
     protected String doInBackground(String... strings) {
-//        if (isCancelled()){
-//            my_cancel();
-//            return null;
-//        }
-//        blueTooth = new BlueTooth(context);
-//        blueTooth.start(new BluetoothInterface() {
-//            @Override
-//            public void onSuccess() {
-//                Log.i(TAG, "onSuccess: 蓝牙连接成功");
-//                concection_ok = true;
-//            }
-//
-//            @Override
-//            public void onError(String errorData) {
-//                Log.e(TAG, "onError: "+errorData);
-//            }
-//
-//            @Override
-//            public void onReceive(String data) {
-//                System.out.println("----------------------------:"+data);
-//                handleData(data);
-//            }
-//        });
-//        while (!ready){
-//            if (isCancelled()){
-//                my_cancel();
-//                return null;
-//            }
-//        }
-//        my_cancel();
-        return null;
-    }
-
-    @Override
-    protected void onPostExecute(String result) {
-        res = Float.toString(new Random().nextInt(40-36)+36)+" "+Integer.toString(new Random().nextInt(85-70)+70);
-        ready = true;
-        if (res == null) {
-            Log.e(TAG, "onPostExecute: res返回空值");
-            return;
-        }
         if (isCancelled()){
             my_cancel();
-            return;
+            return null;
         }
-
-        float temperature;
-        int heartbeat;
-        String[] values = res.split(" ");
-        temperature = Float.valueOf(values[0]);
-        heartbeat = Integer.valueOf(values[1]);
-        Log.i(TAG, "onPostExecute: 温度："+temperature+" 心跳："+heartbeat);
-        insert(context,temperature,heartbeat);            //新添一条体检记录
-        initView(temperature,heartbeat);
-        sweetAlertDialog.cancel();
-    }
-
-    public void handleData(String data){
-        count++;
-        if (count == 100) {
-            res = data;
-            ready = true;       //数据处理完毕
-        }
+        Looper.prepare();
+        dataBroadcast = new DataBroadcast(context,this);
+        Looper.loop();
+        return null;
     }
 
     private void my_cancel(){
@@ -175,17 +110,6 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
                 e.printStackTrace();
             }
         }
-    }
-
-    private void timeoutClosing() {
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-            public void run() {
-                Message message = new Message();
-                message.what = 1;
-                handler.sendMessage(message);
-            }
-        }, 20000);// 20s后超时关闭
     }
 
     private void initView(float temperature,int heartbeat){
@@ -242,7 +166,7 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
         ((LineChart)view_summary.findViewById(R.id.history)).setVisibility(View.GONE);
 
         TextView txt_num3 = (TextView)view_summary.findViewById(R.id.txt_num);
-        txt_num3.setText("确认过眼神，你最健康");
+        txt_num3.setText("确认过眼神，你最健康！");
         list_view.add(view_summary);
         LinearLayout.LayoutParams lpp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         txt_num3.setLayoutParams(lpp);
@@ -317,8 +241,7 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
     @Override
     public void onPageScrolled(int arg0, float arg1, int arg2) {
 
-        FrameLayout.LayoutParams l = (FrameLayout.LayoutParams) img_colorPoint
-                .getLayoutParams();
+        FrameLayout.LayoutParams l = (FrameLayout.LayoutParams) img_colorPoint.getLayoutParams();
         //根据滑动动态设置左外边距
         l.leftMargin = (int) (list_pointView.get(arg0).getLeft() + pointSpacing
                 * arg1);
@@ -339,5 +262,36 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
             xfyunASR.speekText(curretTextView.getText().toString());
             hasAnnounced.add(page);
         }
+    }
+
+    @Override
+    public void onChanged(float temperature, int heartbeat, int bp) {
+        count++;
+        if (isCancelled()){
+            my_cancel();
+            return;
+        }
+        if (count == 10) {
+            this.temperature = temperature;
+            this.heartbeat = heartbeat;
+            Message message = new Message();
+            message.what = 1;
+            handler.sendMessage(message);
+        }
+    }
+
+    @Override
+    public void onaTemperatureChanged(float temperature) {
+
+    }
+
+    @Override
+    public void onHeartbeatChanged(int heartbeat) {
+
+    }
+
+    @Override
+    public void onBpChanged(int bp) {
+
     }
 }
