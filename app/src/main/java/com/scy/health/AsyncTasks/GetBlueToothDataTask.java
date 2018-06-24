@@ -237,6 +237,15 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
         txt_num2.setText("本次测得心率："+Integer.toString(heartbeat));
         list_view.add(view_heartbeat);
 
+        //设置心跳页
+        View view_summary = LayoutInflater.from(context).inflate(R.layout.fragment_page,null);
+        ((LineChart)view_summary.findViewById(R.id.history)).setVisibility(View.GONE);
+
+        TextView txt_num3 = (TextView)view_summary.findViewById(R.id.txt_num);
+        txt_num3.setText("确认过眼神，你最健康");
+        list_view.add(view_summary);
+        LinearLayout.LayoutParams lpp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        txt_num3.setLayoutParams(lpp);
         adapter = new ViewPagerAdapter(list_view);
         viewPager.setAdapter(adapter);
 
