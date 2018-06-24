@@ -7,6 +7,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -16,6 +18,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 
 public class BlueTooth {
@@ -28,7 +32,18 @@ public class BlueTooth {
     private StringBuffer cache = new StringBuffer();
     private int start;
     private int end;
-
+    private Boolean ready = false;
+    private Handler handler = new Handler(){
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 1:
+                    if (!ready)
+                        bluetoothInterface.onError("设备连接超时");
+                    break;
+            }
+            super.handleMessage(msg);
+        }
+    };
     public BlueTooth(Context context) {
         this.context = context;
         checkBT(context);
@@ -38,6 +53,7 @@ public class BlueTooth {
     public void start(BluetoothInterface bluetoothInterface){
         this.bluetoothInterface = bluetoothInterface;
         BTAdapter.startDiscovery();
+        timeout();
     }
 
     public void stop() throws IOException {
@@ -60,8 +76,8 @@ public class BlueTooth {
                 context.startActivity(intent);
             }
         } else {
-            Log.e(TAG, "checkBT: 本地设备驱动异常!");;
-            Toast.makeText(context,"本地设备驱动异常!",Toast.LENGTH_LONG);
+            Log.e(TAG, "checkBT: 本地设备驱动异常!");
+            bluetoothInterface.onError("本地设备驱动异常!");
         }
     }
 
@@ -111,6 +127,7 @@ public class BlueTooth {
                             try {
                                 Method createBondMethod = BluetoothDevice.class.getMethod("createBond");
                                 createBondMethod.invoke(device);
+                                ready = true;
                             } catch (Exception e) {
                                 bluetoothInterface.onError(e.toString());
                                 e.printStackTrace();
@@ -122,6 +139,7 @@ public class BlueTooth {
                                 Log.i(TAG, "onReceive: 开始连接:");
                                 clientThread clientConnectThread = new clientThread();
                                 clientConnectThread.start();
+                                ready = true;
                             } catch (Exception e) {
                                 bluetoothInterface.onError(e.toString());
                                 e.printStackTrace();
@@ -138,6 +156,7 @@ public class BlueTooth {
                         Log.i(TAG, "onReceive: 开始连接:");
                         clientThread clientConnectThread = new clientThread();
                         clientConnectThread.start();
+                        ready = true;
                     } catch (Exception e) {
                         e.printStackTrace();
                         bluetoothInterface.onError(e.toString());
@@ -234,5 +253,19 @@ public class BlueTooth {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /*
+    设置超时，超过20s还不能和蓝牙连接成功，则报错超时
+     */
+    private void timeout() {
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            public void run() {
+                Message message = new Message();
+                message.what = 1;
+                handler.sendMessage(message);
+            }
+        }, 10000);// 20s后超时关闭
     }
 }
