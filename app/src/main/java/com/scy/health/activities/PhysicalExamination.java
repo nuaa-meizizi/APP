@@ -3,28 +3,17 @@ package com.scy.health.activities;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.util.Log;
 
 import com.scy.health.AsyncTasks.GetBlueToothDataTask;
 import com.scy.health.R;
-import com.scy.health.ViewPagerAdapter;
 import com.scy.health.util.XfyunASR;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class PhysicalExamination extends AppCompatActivity {
     private static final String TAG = "PhysicalExamination";
-    private ViewPager viewPager;
     private Context context;
     private XfyunASR xfyunASR;
     private GetBlueToothDataTask GetBlueToothDataTask;
@@ -50,6 +39,7 @@ public class PhysicalExamination extends AppCompatActivity {
 
     @Override
     public void onDestroy() {
+        Log.i(TAG, "onDestroy: 销毁");
         if (GetBlueToothDataTask != null && GetBlueToothDataTask.getStatus()== AsyncTask.Status.RUNNING && !GetBlueToothDataTask.isCancelled())
         {
             GetBlueToothDataTask.cancel(true);
@@ -57,4 +47,5 @@ public class PhysicalExamination extends AppCompatActivity {
         }
         super.onDestroy();
     }
+    
 }

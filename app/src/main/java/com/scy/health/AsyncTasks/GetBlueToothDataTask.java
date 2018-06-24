@@ -103,12 +103,9 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
 
     private void my_cancel(){
         Log.i(TAG, "cancel: 执行了cancel方法");
-        if (blueTooth != null) {
-            try {
-                blueTooth.stop();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        if (dataBroadcast != null) {
+            dataBroadcast.destroy();
+            dataBroadcast = null;
         }
     }
 

@@ -19,7 +19,7 @@ public class DataBroadcast implements BluetoothInterface{
     private BlueTooth blueTooth;
     private static final String TAG = "DataBroadcast";
     private DataBroadcastInterface dataBroadcastInterface;
-
+    private Timer timer;
     public DataBroadcast(Context context,DataBroadcastInterface dataBroadcastInterface){
         this.context = context;
         this.dataBroadcastInterface = dataBroadcastInterface;
@@ -28,7 +28,7 @@ public class DataBroadcast implements BluetoothInterface{
 //        blueTooth.start(this);
 
         //测试用
-        Timer timer = new Timer();
+        timer = new Timer();
         timer.schedule(new TimerTask(){
             public void run(){
                 update(new Random().nextInt(2)+38,new Random().nextInt(3)+78,new Random().nextInt(20)+90);
@@ -41,6 +41,17 @@ public class DataBroadcast implements BluetoothInterface{
         dataBroadcastInterface.onHeartbeatChanged(heartbeat);
         dataBroadcastInterface.onBpChanged(bp);
         dataBroadcastInterface.onChanged(temperature,heartbeat,bp);
+    }
+
+    public void destroy(){
+        if (blueTooth != null) {
+            try {
+                blueTooth.stop();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        timer.cancel();
     }
 
     @Override
