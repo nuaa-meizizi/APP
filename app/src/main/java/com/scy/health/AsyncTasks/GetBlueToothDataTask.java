@@ -2,6 +2,7 @@ package com.scy.health.AsyncTasks;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Handler;
@@ -23,6 +24,7 @@ import com.scy.health.ViewPagerAdapter;
 import com.scy.health.activities.PhysicalExamination;
 import com.scy.health.util.BlueTooth;
 import com.scy.health.util.LineChartManager;
+import com.scy.health.util.XfyunASR;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,8 +32,10 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -40,7 +44,6 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 import static com.scy.health.util.SharedPreferencesDataBase.insert;
 import static com.scy.health.util.SharedPreferencesDataBase.selectHeartBeat;
 import static com.scy.health.util.SharedPreferencesDataBase.selectTemperature;
-
 
 public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  implements ViewPager.OnPageChangeListener{
     private static final String TAG = "GetBlueToothDataTask";
@@ -54,15 +57,18 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
     private GetBlueToothDataTask myself;
     private ViewPager viewPager;
     private FrameLayout layout_frame;
-    LinearLayout layout_point;
-    ViewPagerAdapter adapter;
+    private LinearLayout layout_point;
+    private ViewPagerAdapter adapter;
     private List<View> list_view = new ArrayList<View>();
-    List<ImageView> list_pointView = new ArrayList<ImageView>();
-    ImageView img_colorPoint,left,right;
+    private List<ImageView> list_pointView = new ArrayList<ImageView>();
+    private ImageView img_colorPoint,left,right;
     // 两点之间间距
-    int pointSpacing;
-    Boolean concection_ok = false;
-    int page = 0;
+    private int pointSpacing;
+    private Boolean concection_ok = false;
+    private int page = 0;
+    private XfyunASR xfyunASR;
+    private boolean radioOn;        //是否开启语音播报
+    private Set<Integer> hasAnnounced = new HashSet<Integer>();
 
     private Handler handler = new Handler(){
         public void handleMessage(Message msg) {
@@ -80,62 +86,58 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
         }
     };
 
-    public GetBlueToothDataTask(Context context, SweetAlertDialog sweetAlertDialog)
+    public GetBlueToothDataTask(Context context, SweetAlertDialog sweetAlertDialog, XfyunASR xfyunASR)
     {
         this.context = context;
         this.activity = (Activity)context;
         this.sweetAlertDialog = sweetAlertDialog;
         timeoutClosing();       //超时自动关闭
         this.myself = this;
+        this.xfyunASR = xfyunASR;
+        SharedPreferences sp = context.getSharedPreferences("health", Context.MODE_PRIVATE);
+        this.radioOn = sp.getBoolean("radio",false);
+        Log.i(TAG, "GetBlueToothDataTask: "+radioOn);
     }
 
     @Override
     protected String doInBackground(String... strings) {
-        if (isCancelled()){
-            my_cancel();
-            return null;
-        }
-        blueTooth = new BlueTooth(context);
-        blueTooth.start(new BluetoothInterface() {
-            @Override
-            public void onSuccess() {
-                Log.i(TAG, "onSuccess: 蓝牙连接成功");
-                concection_ok = true;
-            }
-
-            @Override
-            public void onError(String errorData) {
-                Log.e(TAG, "onError: "+errorData);
-            }
-
-            @Override
-            public void onReceive(String data) {
-                System.out.println("----------------------------:"+data);
-                handleData(data);
-            }
-        });
-        while (!ready){
-            if (isCancelled()){
-                my_cancel();
-                return null;
-            }
-        }
-        my_cancel();
+//        if (isCancelled()){
+//            my_cancel();
+//            return null;
+//        }
+//        blueTooth = new BlueTooth(context);
+//        blueTooth.start(new BluetoothInterface() {
+//            @Override
+//            public void onSuccess() {
+//                Log.i(TAG, "onSuccess: 蓝牙连接成功");
+//                concection_ok = true;
+//            }
+//
+//            @Override
+//            public void onError(String errorData) {
+//                Log.e(TAG, "onError: "+errorData);
+//            }
+//
+//            @Override
+//            public void onReceive(String data) {
+//                System.out.println("----------------------------:"+data);
+//                handleData(data);
+//            }
+//        });
+//        while (!ready){
+//            if (isCancelled()){
+//                my_cancel();
+//                return null;
+//            }
+//        }
+//        my_cancel();
         return null;
-    }
-
-    public void handleData(String data){
-        count++;
-        if (count == 100) {
-            res = data;
-            ready = true;       //数据处理完毕
-        }
     }
 
     @Override
     protected void onPostExecute(String result) {
-//        res = Float.toString(new Random().nextInt(40-36)+36)+" "+Integer.toString(new Random().nextInt(85-70)+70);
-//        ready = true;
+        res = Float.toString(new Random().nextInt(40-36)+36)+" "+Integer.toString(new Random().nextInt(85-70)+70);
+        ready = true;
         if (res == null) {
             Log.e(TAG, "onPostExecute: res返回空值");
             return;
@@ -154,6 +156,14 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
         insert(context,temperature,heartbeat);            //新添一条体检记录
         initView(temperature,heartbeat);
         sweetAlertDialog.cancel();
+    }
+
+    public void handleData(String data){
+        count++;
+        if (count == 100) {
+            res = data;
+            ready = true;       //数据处理完毕
+        }
     }
 
     private void my_cancel(){
@@ -214,7 +224,7 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
         history_temperature.setDescription("体温趋势图");
 
         TextView txt_num = (TextView)view_temperature.findViewById(R.id.txt_num);
-        txt_num.setText(Float.toString(temperature));
+        txt_num.setText("本次测得体温："+Float.toString(temperature));
         list_view.add(view_temperature);
         //设置心跳页
         View view_heartbeat = LayoutInflater.from(context).inflate(R.layout.fragment_page,null);
@@ -224,7 +234,7 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
         history_heartbeat.setDescription("心率趋势图");
 
         TextView txt_num2 = (TextView)view_heartbeat.findViewById(R.id.txt_num);
-        txt_num2.setText(Integer.toString(heartbeat));
+        txt_num2.setText("本次测得心率："+Integer.toString(heartbeat));
         list_view.add(view_heartbeat);
 
         adapter = new ViewPagerAdapter(list_view);
@@ -269,7 +279,7 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
                 pointSpacing = layout_point.getChildAt(1).getLeft()- layout_point.getChildAt(0).getLeft();
             }
         });
-
+        voiceAnnouncements(0);          //播报第一个
         left = (ImageView)activity.findViewById(R.id.left);
         right = (ImageView)activity.findViewById(R.id.right);
         left.setOnClickListener(new View.OnClickListener() {
@@ -278,7 +288,7 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
                 if(page!=0){
                     page--;
                     viewPager.setCurrentItem(page);
-                }
+                 }
             }
         });
         right.setOnClickListener(new View.OnClickListener() {
@@ -309,5 +319,16 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
     @Override
     public void onPageSelected(int position) {
         page = position;
+        voiceAnnouncements(page);
+    }
+
+    public void voiceAnnouncements(int page){
+        if (radioOn && !hasAnnounced.contains(page)){
+            View currentView = list_view.get(page);
+            TextView curretTextView = (TextView)currentView.findViewById(R.id.txt_num);
+            Log.i(TAG, "onClick: "+curretTextView.getText().toString());
+            xfyunASR.speekText(curretTextView.getText().toString());
+            hasAnnounced.add(page);
+        }
     }
 }

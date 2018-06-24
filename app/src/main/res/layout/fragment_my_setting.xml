@@ -9,96 +9,111 @@
         android:id="@+id/scrollView1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <TableLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:stretchColumns="0,1"
-            android:weightSum="1">
-            <TableRow
-            android:id="@+id/trsex"
-            android:clickable="true"
-            android:layout_marginTop="18dp"
-            android:layout_marginBottom="18dp">
-
-            <TextView
+            android:orientation="vertical">
+            <TableLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:text="性别"
-                android:textSize="18dp" />
+                android:layout_height="match_parent"
+                android:stretchColumns="0,1"
+                android:weightSum="1">
+                <TableRow
+                    android:id="@+id/trsex"
+                    android:clickable="true"
+                    android:layout_marginTop="18dp"
+                    android:layout_marginBottom="18dp">
 
-            <TextView
-                android:id="@+id/sex"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="10dp"
-                android:text="男"
-                android:gravity="right"
-                android:textSize="18dp" />
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="20dp"
-                android:gravity="right"
-                android:text=">"
-                android:textSize="20dp" />
-        </TableRow>
-            <View
-                android:layout_width="fill_parent"
-                android:layout_height="1px"
-                android:background="@color/LightGrey"  />
-            <TableRow
-                android:id="@+id/contacts"
-                android:clickable="true"
-                android:layout_marginTop="18dp"
-                android:layout_marginBottom="18dp">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:text="性别"
+                        android:textColor="#000000"
+                        android:textSize="18dp" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:text="紧急联系人"
-                    android:textSize="18dp" />
+                    <TextView
+                        android:id="@+id/sex"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="10dp"
+                        android:text="男"
+                        android:textColor="#000000"
+                        android:gravity="right"
+                        android:textSize="18dp" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="20dp"
+                        android:gravity="right"
+                        android:textColor="#000000"
+                        android:text=">"
+                        android:textSize="20dp" />
+                </TableRow>
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="1px"
+                    android:background="@color/LightGrey"  />
+                <TableRow
+                    android:id="@+id/contacts"
+                    android:clickable="true"
+                    android:layout_marginTop="18dp"
+                    android:layout_marginBottom="18dp">
 
-                <TextView
-                    android:id="@+id/phone"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="10dp"
-                    android:text="10086"
-                    android:gravity="right"
-                    android:textSize="18dp" />
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="20dp"
-                    android:gravity="right"
-                    android:text=">"
-                    android:textSize="20dp" />
-            </TableRow>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:text="紧急联系人"
+                        android:textColor="#000000"
+                        android:textSize="18dp" />
+
+                    <TextView
+                        android:id="@+id/phone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="10dp"
+                        android:text="10086"
+                        android:gravity="right"
+                        android:textColor="#000000"
+                        android:textSize="18dp" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="20dp"
+                        android:gravity="right"
+                        android:text=">"
+                        android:textColor="#000000"
+                        android:textSize="20dp" />
+                </TableRow>
+
+            </TableLayout>
             <View
                 android:layout_width="fill_parent"
                 android:layout_height="40px"
                 android:background="@color/LightGrey"  />
-            <TableRow
+            <TextView
                 android:id="@+id/trclear"
-                android:clickable="true"
                 android:layout_marginTop="18dp"
-                android:layout_marginBottom="18dp">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:text="清除本地数据"
-                    android:textSize="18dp" />
-
-            </TableRow>
+                android:layout_marginBottom="18dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:text="清除本地数据"
+                android:textColor="#000000"
+                android:textSize="18dp" />
             <View
                 android:layout_width="fill_parent"
                 android:layout_height="1px"
-                android:background="@color/LightGrey"  />
-        </TableLayout>
-    </ScrollView>
+                android:background="@color/LightGrey"/>
 
+            <Switch
+                android:id="@+id/radioSwitch"
+                android:layout_margin="10dp"
+                android:layout_width="match_parent"
+                android:textSize="18dp"
+                android:layout_height="wrap_content"
+                android:text="是否开启语音播报" />
+        </LinearLayout>
+    </ScrollView>
 </FrameLayout>

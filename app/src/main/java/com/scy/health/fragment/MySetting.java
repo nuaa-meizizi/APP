@@ -10,7 +10,9 @@ import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,12 +20,13 @@ import android.widget.Toast;
 import com.scy.health.R;
 
 public class MySetting extends Fragment {
-    private TableRow trsex,contacts,trclear;
-    private TextView phone,sex;
+    private TableRow trsex,contacts;
+    private TextView phone,sex,clear;
     private SharedPreferences sharedPreferences;
     private Editor editor;
     String single[] = {"男","女"};
     String singleChoice;
+    private Switch radioOn;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -36,15 +39,16 @@ public class MySetting extends Fragment {
 
     public void initView(View view){
         trsex = (TableRow)view.findViewById(R.id.trsex);
-        trclear = (TableRow)view.findViewById(R.id.trclear);
+        clear = (TextView)view.findViewById(R.id.trclear);
         contacts = (TableRow)view.findViewById(R.id.contacts);
         phone = (TextView)view.findViewById(R.id.phone);
         sex = (TextView)view.findViewById(R.id.sex);
+        radioOn = (Switch)view.findViewById(R.id.radioSwitch);
         sharedPreferences = getActivity().getSharedPreferences("setting", Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
         phone.setText(sharedPreferences.getString("phone","10086"));
         sex.setText(sharedPreferences.getString("sex","男"));
-        trclear.setOnClickListener(new View.OnClickListener() {
+        clear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 SharedPreferences sp = getContext().getSharedPreferences("health", Context.MODE_PRIVATE);
@@ -99,6 +103,15 @@ public class MySetting extends Fragment {
                 builder.setView(et);
                 builder.setNegativeButton("取消", null);
                 builder.create().show();
+            }
+        });
+
+        radioOn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                SharedPreferences sp = getContext().getSharedPreferences("health", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sp.edit();
+                editor.putBoolean("radio",b).apply();
             }
         });
     }

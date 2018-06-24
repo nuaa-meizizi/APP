@@ -3,12 +3,13 @@ package com.scy.health;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
-
+import android.view.ViewGroup;
 import java.util.List;
 
 public class ViewPagerAdapter extends PagerAdapter {
 
     private List<View> views;
+    private View mCurrentView;
 
     public ViewPagerAdapter(List<View> list) {
         super();
@@ -41,4 +42,5 @@ public class ViewPagerAdapter extends PagerAdapter {
     public boolean isViewFromObject(View arg0, Object arg1) {
         return arg0 == arg1;
     }
+
 }

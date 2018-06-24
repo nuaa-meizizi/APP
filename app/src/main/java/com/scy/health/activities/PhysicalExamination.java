@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.scy.health.AsyncTasks.GetBlueToothDataTask;
 import com.scy.health.R;
 import com.scy.health.ViewPagerAdapter;
+import com.scy.health.util.XfyunASR;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,8 +26,7 @@ public class PhysicalExamination extends AppCompatActivity {
     private static final String TAG = "PhysicalExamination";
     private ViewPager viewPager;
     private Context context;
-
-
+    private XfyunASR xfyunASR;
     private GetBlueToothDataTask GetBlueToothDataTask;
     private SweetAlertDialog sweetAlertDialog;
 
@@ -39,11 +39,12 @@ public class PhysicalExamination extends AppCompatActivity {
                 .setContentText("体检中");
         sweetAlertDialog.show();
         sweetAlertDialog.setCancelable(false);
+        xfyunASR = new XfyunASR(this);
         getData();
     }
 
     public void getData(){
-        GetBlueToothDataTask = new GetBlueToothDataTask(context,sweetAlertDialog);
+        GetBlueToothDataTask = new GetBlueToothDataTask(context,sweetAlertDialog,xfyunASR);
         GetBlueToothDataTask.execute();
     }
 
