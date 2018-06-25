@@ -13,27 +13,41 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.github.mikephil.charting.charts.LineChart;
 import com.luseen.luseenbottomnavigation.BottomNavigation.BottomNavigationView;
+import com.scy.health.Interface.DataBroadcastInterface;
 import com.scy.health.R;
+import com.scy.health.util.DataBroadcast;
+import com.scy.health.util.LineChartManager;
 import com.scy.health.util.PremissionDialog;
 import com.tbruyelle.rxpermissions2.RxPermissions;
+
+import java.util.LinkedList;
+import java.util.List;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import io.reactivex.functions.Consumer;
 
-public class Driving extends Fragment {
+public class Driving extends Fragment implements DataBroadcastInterface {
     private ImageView backup;
     private BottomNavigationView meau;
     private SweetAlertDialog dialog;
     private SharedPreferences sharedPreferences;
     private String tag = "Driving";
+    private LineChartManager heart_beat,blood_pressure,temperature;
+    private TextView status;
+    private DataBroadcast dataBroadcast;
+    private static final String TAG = "DrivingFragment";
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+                             Bundle savedInstanceState)  {
         final View view =  inflater.inflate(R.layout.fragment_driving, container, false);
         initView(view);
         getPermission();
+        dataBroadcast = new DataBroadcast(getContext(),this);       //监听数据变化
         return view;
     }
 
@@ -41,7 +55,15 @@ public class Driving extends Fragment {
         backup = (ImageView)getActivity().findViewById(R.id.backup);
         meau = (BottomNavigationView)getActivity().findViewById(R.id.bottomview);
         sharedPreferences = getActivity().getSharedPreferences("setting", Context.MODE_PRIVATE);
+        LineChart heart_beat_lc = (LineChart)view.findViewById(R.id.heart_beat);
+        LineChart blood_pressure_lc = (LineChart)view.findViewById(R.id.blood_pressure);
+        LineChart temperature_lc = (LineChart)view.findViewById(R.id.temperature);
 
+        heart_beat = new LineChartManager(heart_beat_lc,"心率",Color.GREEN);
+        blood_pressure = new LineChartManager(blood_pressure_lc,"血压",Color.GREEN);
+        temperature = new LineChartManager(temperature_lc,"体温",Color.GREEN);
+
+        status = (TextView)getActivity().findViewById(R.id.status);
         meau.setVisibility(View.GONE);
         backup.setVisibility(View.VISIBLE);
         backup.setOnClickListener(new View.OnClickListener() {
@@ -78,6 +100,7 @@ public class Driving extends Fragment {
         super.onDestroyView();
         meau.setVisibility(View.VISIBLE);
         backup.setVisibility(View.GONE);
+        dataBroadcast.destroy();
     }
 
     public void callPhone() {
@@ -108,5 +131,26 @@ public class Driving extends Fragment {
                 });
     }
 
+    @Override
+    public void onaTemperatureChanged(float temperature) {
+        Log.i(TAG, "onaTemperatureChanged: "+temperature);
+        this.temperature.addEntry(temperature);
+    }
 
+    @Override
+    public void onHeartbeatChanged(int heartbeat) {
+        Log.i(TAG, "onHeartbeatChanged: "+heartbeat);
+        this.heart_beat.addEntry(heartbeat);
+    }
+
+    @Override
+    public void onBpChanged(int bp) {
+        Log.i(TAG, "onBpChanged: "+bp);
+        this.blood_pressure.addEntry(bp);
+    }
+
+    @Override
+    public void onChanged(float temperature, int heartbeat, int bp) {
+
+    }
 }

@@ -1,33 +1,77 @@
-<?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+<android.support.v7.widget.GridLayout android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragment.Driving">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_weight="10"
+    app:rowCount="2"
+    app:columnCount="2"
+    xmlns:android="http://schemas.android.com/apk/res/android">
     <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-        <LinearLayout
-        android:id="@+id/chart"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="10dp"
-        android:layout_weight="1"
-        android:orientation="vertical">
-        <org.angmarch.views.NiceSpinner
-            android:id="@+id/nice_spinner"
+        android:background="#ffffff"
+        android:layout_margin="1dp"
+        android:orientation="vertical"
+        app:layout_rowWeight="1"
+        android:gravity="center"
+        app:layout_columnWeight="1">
+        <TextView
+            android:id="@+id/status"
+            android:layout_margin="10dp"
             android:layout_width="wrap_content"
-            android:layout_margin="5dp"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="正常"/>
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_margin="1dp"
+        app:layout_rowWeight="1"
+        app:layout_columnWeight="1"
+        android:gravity="center"
+        android:background="#ffffff">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="心率"/>
         <com.github.mikephil.charting.charts.LineChart
-            android:id="@+id/lineChart"
+            android:id="@+id/heart_beat"
+            android:layout_weight="1"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_centerInParent="true"/>
-
+            android:layout_height="match_parent">
+        </com.github.mikephil.charting.charts.LineChart>
     </LinearLayout>
+    <LinearLayout
+        android:background="#ffffff"
+        android:layout_margin="1dp"
+        android:orientation="vertical"
+        app:layout_rowWeight="1"
+        app:layout_columnWeight="1"
+        android:gravity="center">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="血压"/>
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/blood_pressure"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </com.github.mikephil.charting.charts.LineChart>
     </LinearLayout>
-
-</FrameLayout>
+    <LinearLayout
+        android:background="#ffffff"
+        android:layout_margin="5dp"
+        android:orientation="vertical"
+        app:layout_rowWeight="1"
+        app:layout_columnWeight="1"
+        android:gravity="center">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="体温"/>
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/temperature"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </com.github.mikephil.charting.charts.LineChart>
+    </LinearLayout>
+</android.support.v7.widget.GridLayout>

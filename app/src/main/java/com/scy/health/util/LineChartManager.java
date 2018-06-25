@@ -13,6 +13,7 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,12 +26,52 @@ public class LineChartManager {
     private YAxis leftAxis;   //左边Y轴
     private YAxis rightAxis;  //右边Y轴
     private XAxis xAxis;      //X轴
+    private LineData lineData;
+    private LineDataSet lineDataSet;
+    private SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");//设置日期格式
+    private List<String> timeList = new ArrayList<>(); //存储x轴的时间
+
 
     public LineChartManager(LineChart mLineChart) {
         this.lineChart = mLineChart;
         leftAxis = lineChart.getAxisLeft();
         rightAxis = lineChart.getAxisRight();
         xAxis = lineChart.getXAxis();
+    }
+
+    public LineChartManager(LineChart mLineChart, String name, int color) {
+        this.lineChart = mLineChart;
+        leftAxis = lineChart.getAxisLeft();
+        rightAxis = lineChart.getAxisRight();
+        xAxis = lineChart.getXAxis();
+        xAxis.setEnabled(false);
+        initLineChart();
+        initLineDataSet(name, color);
+    }
+
+    /**
+     * 初始化折线(一条线)
+     *
+     * @param name
+     * @param color
+     */
+    private void initLineDataSet(String name, int color) {
+
+        lineDataSet = new LineDataSet(null, name);
+        lineDataSet.setLineWidth(1.5f);
+        lineDataSet.setCircleRadius(1.5f);
+        lineDataSet.setColor(color);
+        lineDataSet.setCircleColor(color);
+        lineDataSet.setHighLightColor(color);
+        //设置曲线填充
+        lineDataSet.setDrawFilled(true);
+        lineDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
+        lineDataSet.setValueTextSize(10f);
+        lineDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        //添加一个空的 LineData
+        lineData = new LineData();
+        lineChart.setData(lineData);
+        lineChart.invalidate();
     }
 
     /**
@@ -226,5 +267,55 @@ public class LineChartManager {
         description.setText(str);
         lineChart.setDescription(description);
         lineChart.invalidate();
+    }
+
+    public void addEntry(Float number) {
+
+        //最开始的时候才添加 lineDataSet（一个lineDataSet 代表一条线）
+        if (lineDataSet.getEntryCount() == 0) {
+            lineData.addDataSet(lineDataSet);
+        }
+        lineChart.setData(lineData);
+        //避免集合数据过多，及时清空（做这样的处理，并不知道有没有用，但还是这样做了）
+        if (timeList.size() > 11) {
+            timeList.clear();
+        }
+
+        timeList.add(df.format(System.currentTimeMillis()));
+
+        Entry entry = new Entry(lineDataSet.getEntryCount(), number);
+        lineData.addEntry(entry, 0);
+        //通知数据已经改变
+        lineData.notifyDataChanged();
+        lineChart.notifyDataSetChanged();
+        //设置在曲线图中显示的最大数量
+        lineChart.setVisibleXRangeMaximum(10);
+        //移到某个位置
+        lineChart.moveViewToX(lineData.getEntryCount() - 5);
+    }
+
+    public void addEntry(int number) {
+
+        //最开始的时候才添加 lineDataSet（一个lineDataSet 代表一条线）
+        if (lineDataSet.getEntryCount() == 0) {
+            lineData.addDataSet(lineDataSet);
+        }
+        lineChart.setData(lineData);
+        //避免集合数据过多，及时清空（做这样的处理，并不知道有没有用，但还是这样做了）
+        if (timeList.size() > 11) {
+            timeList.clear();
+        }
+
+        timeList.add(df.format(System.currentTimeMillis()));
+
+        Entry entry = new Entry(lineDataSet.getEntryCount(), number);
+        lineData.addEntry(entry, 0);
+        //通知数据已经改变
+        lineData.notifyDataChanged();
+        lineChart.notifyDataSetChanged();
+        //设置在曲线图中显示的最大数量
+        lineChart.setVisibleXRangeMaximum(10);
+        //移到某个位置
+        lineChart.moveViewToX(lineData.getEntryCount() - 5);
     }
 }
