@@ -47,11 +47,17 @@ public class MainActivity extends AppCompatActivity implements EventListener {
         baiduWakeUp = new BaiduWakeUp(this, this);
         xfyunASR = new XfyunASR(this);
         baiduWakeUp.start();
-
         MultPermission();
-
         initView();
         setTabSelection(0);
+    }
+
+    public XfyunASR getXfyunASR(){
+        return xfyunASR;
+    }
+
+    public BaiduWakeUp getBaiduWakeUp(){
+        return baiduWakeUp;
     }
 
     @Override
@@ -151,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements EventListener {
         }
     }
 
-    private void response(String content) {      //自定义语音指令
+    public void response(String content) {      //自定义语音指令
         System.out.println(content);
         if (content.equals("进入首页")) {
             setTabSelection(0);

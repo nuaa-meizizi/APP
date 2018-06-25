@@ -49,6 +49,18 @@ public class XfyunASR {
             MediaPlayer mMediaPlayer= MediaPlayer.create(context, R.raw.failunderstand);
             mMediaPlayer.start();
         }
+        else if (s.equals("警报")){
+            MediaPlayer mMediaPlayer= MediaPlayer.create(context, R.raw.alert);
+            mMediaPlayer.start();
+        }
+        else if (s.equals("联系紧急联系人")){
+            MediaPlayer mMediaPlayer= MediaPlayer.create(context, R.raw.callphone);
+            mMediaPlayer.start();
+        }
+        else if (s.equals("取消报警")){
+            MediaPlayer mMediaPlayer= MediaPlayer.create(context, R.raw.cancel);
+            mMediaPlayer.start();
+        }
         else{
             SpeechSynthesizer mTts = SpeechSynthesizer.createSynthesizer( context, null);
             mTts.setParameter(SpeechConstant. VOICE_NAME, "xiaoyu" ); // 设置发音人

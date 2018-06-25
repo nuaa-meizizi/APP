@@ -7,6 +7,8 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,14 +20,18 @@ import android.widget.TextView;
 import com.github.mikephil.charting.charts.LineChart;
 import com.luseen.luseenbottomnavigation.BottomNavigation.BottomNavigationView;
 import com.scy.health.Interface.DataBroadcastInterface;
+import com.scy.health.Interface.XfyunInterface;
 import com.scy.health.R;
+import com.scy.health.activities.MainActivity;
+import com.scy.health.util.BaiduWakeUp;
 import com.scy.health.util.DataBroadcast;
 import com.scy.health.util.LineChartManager;
 import com.scy.health.util.PremissionDialog;
+import com.scy.health.util.XfyunASR;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import io.reactivex.functions.Consumer;
@@ -40,12 +46,62 @@ public class Driving extends Fragment implements DataBroadcastInterface {
     private TextView status;
     private DataBroadcast dataBroadcast;
     private static final String TAG = "DrivingFragment";
+    private BaiduWakeUp baiduWakeUp;
+    private XfyunASR xfyunASR;
+    private boolean tep = true;
+    private Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what){
+                case 1:
+                    xfyunASR.startSpeechDialog(new XfyunInterface() {
+                        @Override
+                        public void GetData(String content) {
+                            Log.d(TAG, "GetData: "+content);
+                            if (!content.substring(0, content.length() - 1).equals("一切正常")){
+                                xfyunASR.speekText("联系紧急联系人");
+                                callPhone();
+                                baiduWakeUp.start();
+                            }
+                            else {
+                                xfyunASR.speekText("取消报警");
+                                baiduWakeUp.start();
+                            }
+                        }
+                        @Override
+                        public void onError(String errorData) {
+                            xfyunASR.speekText("联系紧急联系人");
+                            callPhone();
+                            baiduWakeUp.start();
+                        }
+                    });
+                    break;
+                case 2:
+                    baiduWakeUp.stop();
+                    status.setText("异常！！！！！");
+                    xfyunASR.speekText("警报");
+                    Timer timer = new Timer();
+                    timer.schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            Message message = new Message();
+                            message.what = 1;
+                            handler.sendMessage(message);
+                        }
+                    }, 6500);
+                    break;
 
+            }
+        }
+    };
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)  {
         final View view =  inflater.inflate(R.layout.fragment_driving, container, false);
         initView(view);
+        baiduWakeUp = ((MainActivity)getActivity()).getBaiduWakeUp();
+        xfyunASR = ((MainActivity)getActivity()).getXfyunASR();
         getPermission();
         dataBroadcast = new DataBroadcast(getContext(),this);       //监听数据变化
         return view;
@@ -55,6 +111,7 @@ public class Driving extends Fragment implements DataBroadcastInterface {
         backup = (ImageView)getActivity().findViewById(R.id.backup);
         meau = (BottomNavigationView)getActivity().findViewById(R.id.bottomview);
         sharedPreferences = getActivity().getSharedPreferences("setting", Context.MODE_PRIVATE);
+
         LineChart heart_beat_lc = (LineChart)view.findViewById(R.id.heart_beat);
         LineChart blood_pressure_lc = (LineChart)view.findViewById(R.id.blood_pressure);
         LineChart temperature_lc = (LineChart)view.findViewById(R.id.temperature);
@@ -63,7 +120,7 @@ public class Driving extends Fragment implements DataBroadcastInterface {
         blood_pressure = new LineChartManager(blood_pressure_lc,"血压",Color.GREEN);
         temperature = new LineChartManager(temperature_lc,"体温",Color.GREEN);
 
-        status = (TextView)getActivity().findViewById(R.id.status);
+        status = (TextView)view.findViewById(R.id.status);
         meau.setVisibility(View.GONE);
         backup.setVisibility(View.VISIBLE);
         backup.setOnClickListener(new View.OnClickListener() {
@@ -151,6 +208,19 @@ public class Driving extends Fragment implements DataBroadcastInterface {
 
     @Override
     public void onChanged(float temperature, int heartbeat, int bp) {
+        //监测数据
+        if (tep) {
+            moniter(temperature,heartbeat, bp);
+            tep = false;
+        }
+    }
 
+    public void moniter(float temperature, int heartbeat, int bp){
+        Boolean normal = false;
+        if (!normal){
+            Message message = new Message();
+            message.what = 2;
+            handler.sendMessage(message);
+        }
     }
 }

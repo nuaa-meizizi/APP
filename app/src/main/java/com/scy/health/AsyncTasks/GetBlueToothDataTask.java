@@ -29,11 +29,9 @@ import com.scy.health.util.XfyunASR;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
