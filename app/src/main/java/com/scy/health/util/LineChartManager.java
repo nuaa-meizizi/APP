@@ -30,6 +30,7 @@ public class LineChartManager {
     private LineDataSet lineDataSet;
     private SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");//设置日期格式
     private List<String> timeList = new ArrayList<>(); //存储x轴的时间
+    private List<ILineDataSet> lineDataSets = new ArrayList<>();
 
 
     public LineChartManager(LineChart mLineChart) {
@@ -47,6 +48,46 @@ public class LineChartManager {
         xAxis.setEnabled(false);
         initLineChart();
         initLineDataSet(name, color);
+    }
+
+    //多条曲线
+    public LineChartManager(LineChart mLineChart, List<String> names, List<Integer> colors) {
+        this.lineChart = mLineChart;
+        leftAxis = lineChart.getAxisLeft();
+        rightAxis = lineChart.getAxisRight();
+        xAxis = lineChart.getXAxis();
+        initLineChart();
+        initLineDataSet(names, colors);
+    }
+
+    /**
+     * 初始化折线（多条线）
+     *
+     * @param names
+     * @param colors
+     */
+    private void initLineDataSet(List<String> names, List<Integer> colors) {
+
+        for (int i = 0; i < names.size(); i++) {
+            lineDataSet = new LineDataSet(null, names.get(i));
+            lineDataSet.setColor(colors.get(i));
+            lineDataSet.setLineWidth(1.5f);
+            lineDataSet.setCircleRadius(1.5f);
+            lineDataSet.setColor(colors.get(i));
+
+            lineDataSet.setDrawFilled(true);
+            lineDataSet.setCircleColor(colors.get(i));
+            lineDataSet.setHighLightColor(colors.get(i));
+            lineDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+            lineDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
+            lineDataSet.setValueTextSize(10f);
+            lineDataSets.add(lineDataSet);
+
+        }
+        //添加一个空的 LineData
+        lineData = new LineData();
+        lineChart.setData(lineData);
+        lineChart.invalidate();
     }
 
     /**
@@ -317,5 +358,30 @@ public class LineChartManager {
         lineChart.setVisibleXRangeMaximum(10);
         //移到某个位置
         lineChart.moveViewToX(lineData.getEntryCount() - 5);
+    }
+
+    /**
+     * 动态添加数据（多条折线图）
+     *
+     * @param numbers
+     */
+    public void addEntry(List<Integer> numbers) {
+
+        if (lineDataSets.get(0).getEntryCount() == 0) {
+            lineData = new LineData(lineDataSets);
+            lineChart.setData(lineData);
+        }
+        if (timeList.size() > 11) {
+            timeList.clear();
+        }
+        timeList.add(df.format(System.currentTimeMillis()));
+        for (int i = 0; i < numbers.size(); i++) {
+            Entry entry = new Entry(lineDataSet.getEntryCount(), numbers.get(i));
+            lineData.addEntry(entry, i);
+            lineData.notifyDataChanged();
+            lineChart.notifyDataSetChanged();
+            lineChart.setVisibleXRangeMaximum(6);
+            lineChart.moveViewToX(lineData.getEntryCount() - 5);
+        }
     }
 }

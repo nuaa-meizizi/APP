@@ -21,7 +21,6 @@ import com.github.mikephil.charting.charts.LineChart;
 import com.scy.health.Interface.DataBroadcastInterface;
 import com.scy.health.R;
 import com.scy.health.ViewPagerAdapter;
-import com.scy.health.util.BlueTooth;
 import com.scy.health.util.DataBroadcast;
 import com.scy.health.util.LineChartManager;
 import com.scy.health.util.XfyunASR;
@@ -43,7 +42,6 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
     private static final String TAG = "GetBlueToothDataTask";
     private Context context;
     private Activity activity;
-    private BlueTooth blueTooth;
     private int count;          //接受数据次数
     private SweetAlertDialog sweetAlertDialog;
     private ViewPager viewPager;
@@ -82,7 +80,7 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
         this.activity = (Activity)context;
         this.sweetAlertDialog = sweetAlertDialog;
         this.xfyunASR = xfyunASR;
-        SharedPreferences sp = context.getSharedPreferences("health", Context.MODE_PRIVATE);
+        SharedPreferences sp = context.getSharedPreferences("setting", Context.MODE_PRIVATE);
         this.radioOn = sp.getBoolean("radio",false);
         Log.i(TAG, "GetBlueToothDataTask: "+radioOn);
     }
@@ -156,12 +154,12 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
         txt_num2.setText("本次测得心率："+Integer.toString(heartbeat));
         list_view.add(view_heartbeat);
 
-        //设置心跳页
+        //设置报告页
         View view_summary = LayoutInflater.from(context).inflate(R.layout.fragment_page,null);
         ((LineChart)view_summary.findViewById(R.id.history)).setVisibility(View.GONE);
 
         TextView txt_num3 = (TextView)view_summary.findViewById(R.id.txt_num);
-        txt_num3.setText("确认过眼神，你最健康！");
+//        txt_num3.setText(Measurement.measureIndicator(temperature,heartbeat));
         list_view.add(view_summary);
         LinearLayout.LayoutParams lpp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         txt_num3.setLayoutParams(lpp);
@@ -260,7 +258,7 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
     }
 
     @Override
-    public void onChanged(float temperature, int heartbeat, int bp) {
+    public void onChanged(float temperature, int heartbeat, int[] bp) {
         count++;
         if (isCancelled()){
             my_cancel();
@@ -286,7 +284,7 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
     }
 
     @Override
-    public void onBpChanged(int bp) {
+    public void onBpChanged(int[] bp) {
 
     }
 }

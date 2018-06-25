@@ -26,10 +26,13 @@ import com.scy.health.activities.MainActivity;
 import com.scy.health.util.BaiduWakeUp;
 import com.scy.health.util.DataBroadcast;
 import com.scy.health.util.LineChartManager;
+import com.scy.health.util.Measurement;
 import com.scy.health.util.PremissionDialog;
 import com.scy.health.util.XfyunASR;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -49,6 +52,7 @@ public class Driving extends Fragment implements DataBroadcastInterface {
     private BaiduWakeUp baiduWakeUp;
     private XfyunASR xfyunASR;
     private boolean tep = true;
+    private String sex;
     private Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -79,7 +83,7 @@ public class Driving extends Fragment implements DataBroadcastInterface {
                     break;
                 case 2:
                     baiduWakeUp.stop();
-                    status.setText("异常！！！！！");
+                    status.setText((String)msg.obj);
                     xfyunASR.speekText("警报");
                     Timer timer = new Timer();
                     timer.schedule(new TimerTask() {
@@ -111,13 +115,22 @@ public class Driving extends Fragment implements DataBroadcastInterface {
         backup = (ImageView)getActivity().findViewById(R.id.backup);
         meau = (BottomNavigationView)getActivity().findViewById(R.id.bottomview);
         sharedPreferences = getActivity().getSharedPreferences("setting", Context.MODE_PRIVATE);
-
+        sex = sharedPreferences.getString("sex","男");
         LineChart heart_beat_lc = (LineChart)view.findViewById(R.id.heart_beat);
         LineChart blood_pressure_lc = (LineChart)view.findViewById(R.id.blood_pressure);
         LineChart temperature_lc = (LineChart)view.findViewById(R.id.temperature);
 
         heart_beat = new LineChartManager(heart_beat_lc,"心率",Color.GREEN);
-        blood_pressure = new LineChartManager(blood_pressure_lc,"血压",Color.GREEN);
+
+        List<String> names = new ArrayList<>(); //折线名字集合
+        List<Integer> colour = new ArrayList<>();//折线颜色集合
+        names.add("收缩压");
+        names.add("舒张压");
+        //折线颜色
+        colour.add(Color.CYAN);
+        colour.add(Color.GREEN);
+
+        blood_pressure = new LineChartManager(blood_pressure_lc,names,colour);
         temperature = new LineChartManager(temperature_lc,"体温",Color.GREEN);
 
         status = (TextView)view.findViewById(R.id.status);
@@ -201,25 +214,34 @@ public class Driving extends Fragment implements DataBroadcastInterface {
     }
 
     @Override
-    public void onBpChanged(int bp) {
-        Log.i(TAG, "onBpChanged: "+bp);
-        this.blood_pressure.addEntry(bp);
+    public void onBpChanged(int[] bp) {
+        Log.i(TAG, "onBpChanged: "+bp[0]+bp[1]);
+        List<Integer> bplist = new ArrayList<>(); //数据集合
+        bplist.add(bp[0]);
+        bplist.add(bp[1]);
+        this.blood_pressure.addEntry(bplist);
     }
 
     @Override
-    public void onChanged(float temperature, int heartbeat, int bp) {
+    public void onChanged(float temperature, int heartbeat, int[] bp) {
         //监测数据
-        if (tep) {
+//        if (tep) {
             moniter(temperature,heartbeat, bp);
-            tep = false;
-        }
+//            tep = false;
+//        }
     }
 
-    public void moniter(float temperature, int heartbeat, int bp){
-        Boolean normal = false;
+    public void moniter(float temperature, int heartbeat, int[] bp){
+        Boolean normal;
+        String res = Measurement.measureIndicator(temperature,heartbeat,bp,sex);
+        if(res.length() < 2)
+            normal = true;
+        else
+            normal = false;
         if (!normal){
             Message message = new Message();
             message.what = 2;
+            message.obj = res;
             handler.sendMessage(message);
         }
     }

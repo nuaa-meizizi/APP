@@ -109,8 +109,6 @@ public class MySetting extends Fragment {
         radioOn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                SharedPreferences sp = getContext().getSharedPreferences("health", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sp.edit();
                 editor.putBoolean("radio",b).apply();
             }
         });

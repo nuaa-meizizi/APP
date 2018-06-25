@@ -28,12 +28,15 @@ public class DataBroadcast implements BluetoothInterface{
         timer = new Timer();
         timer.schedule(new TimerTask(){
             public void run(){
-                update(new Random().nextInt(2)+38,new Random().nextInt(3)+78,new Random().nextInt(20)+90);
+                int[] bp = new int[2];
+                bp[0] = new Random().nextInt(80)+80;
+                bp[1] = new Random().nextInt(60)+50;
+                update(new Random().nextInt(2)+38,new Random().nextInt(3)+78,bp);
             }
         }, 0,1*1000);
     }
 
-    private void update(float temperature,int heartbeat,int bp){
+    private void update(float temperature,int heartbeat,int[] bp){
         dataBroadcastInterface.onaTemperatureChanged(temperature);
         dataBroadcastInterface.onHeartbeatChanged(heartbeat);
         dataBroadcastInterface.onBpChanged(bp);
@@ -72,8 +75,9 @@ public class DataBroadcast implements BluetoothInterface{
         //可以在这里访问网络请求虚拟参数
         float temperature;
         int heartbeat;
-        int bp = new Random().nextInt(30)+90;
-        String[] values = data.split(" ");
+        int[] bp = new int[2];
+        bp[0] = new Random().nextInt(80)+80;
+        bp[1] = new Random().nextInt(60)+50;        String[] values = data.split(" ");
         temperature = Float.valueOf(values[0]);
         heartbeat = Integer.valueOf(values[1]);
         update(temperature,heartbeat,bp);
