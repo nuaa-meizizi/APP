@@ -19,16 +19,19 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/point"/>
             <TextView
+                android:id="@+id/location"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginRight="5dp"
-                android:gravity="center"
-                android:text="南京"/>
+                android:textSize="15sp"
+                android:text="南京"
+                android:gravity="center" />
             <TextView
-                android:layout_width="match_parent"
+                android:id="@+id/update_date"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:text="最近更新：10-10 08:53:00"
-                android:gravity="right|center_vertical"
+                android:gravity="end|center_vertical"
+                android:textSize="15sp"
                 android:layout_weight="1"/>
         </LinearLayout>
         <LinearLayout
@@ -38,6 +41,7 @@
             android:orientation="horizontal">
 
             <TextView
+                android:id="@+id/tmp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="14°"
@@ -45,6 +49,7 @@
                 android:textSize="60sp" />
 
             <ImageView
+                android:id="@+id/wpng"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/w100"/>
@@ -54,6 +59,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
                 <TextView
+                    android:id="@+id/cond_txt"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="right"
@@ -64,13 +70,15 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="right"
                     android:orientation="horizontal">
+
                     <TextView
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="湿度"
                         android:layout_marginRight="10dp"
-                        android:textSize="15sp"/>
+                        android:text="湿度"
+                        android:textSize="15sp" />
                     <TextView
+                        android:id="@+id/hum"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="66%"
@@ -82,12 +90,14 @@
                     android:layout_gravity="right"
                     android:orientation="horizontal">
                     <TextView
+                        android:id="@+id/wind_dir"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="北风"
                         android:layout_marginRight="10dp"
                         android:textSize="15sp"/>
                     <TextView
+                        android:id="@+id/wind_spd"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="13km/h"
@@ -105,6 +115,7 @@
                         android:layout_marginRight="10dp"
                         android:textSize="15sp"/>
                     <TextView
+                        android:id="@+id/vis"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="10km"
@@ -141,27 +152,13 @@
             android:layout_marginTop="5dp"
             android:orientation="vertical">
 
-            <RelativeLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/cond_txt_d"
+                android:layout_weight="1"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1">
-
-                <TextView
-                    android:id="@+id/weather_des"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="15sp"
-                    android:text="降水概率:  " />
-
-                <TextView
-                    android:id="@+id/weather_cond"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_toRightOf="@id/weather_des"
-                    android:textSize="15sp"
-                    android:text="87%" />
-
-            </RelativeLayout>
+                android:text="33°"
+                android:textSize="20sp" />
 
             <RelativeLayout
                 android:id="@+id/des"
@@ -179,7 +176,7 @@
 
                 <TextView
                     android:layout_centerVertical="true"
-                    android:id="@+id/weather_tmp"
+                    android:id="@+id/future_tmp"
                     android:layout_toRightOf="@id/weather_tmp_des"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -188,8 +185,8 @@
 
                 <TextView
                     android:layout_centerVertical="true"
-                    android:id="@+id/wind_hours"
-                    android:layout_toRightOf="@+id/weather_tmp"
+                    android:id="@+id/future_wind"
+                    android:layout_toRightOf="@+id/future_tmp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"

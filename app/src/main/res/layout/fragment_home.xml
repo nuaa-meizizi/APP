@@ -72,7 +72,7 @@
                 android:layout_weight="1"
                 android:orientation="vertical"
                 android:background="@drawable/shape_corner">
-                <include layout="@layout/weather"/>
+                <include android:id="@+id/weather_view" layout="@layout/weather"/>
             </LinearLayout>
 
             <LinearLayout

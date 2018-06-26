@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -25,6 +26,7 @@ import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.scy.health.AsyncTasks.LocalReadDataTask;
+import com.scy.health.AsyncTasks.WeatherTask;
 import com.scy.health.R;
 import com.scy.health.activities.PhysicalExamination;
 
@@ -38,6 +40,8 @@ public class Home extends Fragment {
     private LocationManager locationManager;
     private String locationProvider;
     private Button start;
+    private View weather_view;
+    private static final String TAG = "Home";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -65,6 +69,7 @@ public class Home extends Fragment {
     public void initView(View view) {
         mLineChart = (LineChart) view.findViewById(R.id.lineChart);
         new LocalReadDataTask(context,mLineChart,view).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
+        weather_view = view.findViewById(R.id.weather_view);
         start = (Button)view.findViewById(R.id.start);
         start.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -149,8 +154,8 @@ public class Home extends Fragment {
 
     public void showLocation(Location location) {
         String address = location.getLongitude() + "," + location.getLatitude();
-        Toast.makeText(getContext(), address, Toast.LENGTH_SHORT).show();
-        System.out.println(address);
+        new WeatherTask(address,context,weather_view).execute();
+        Log.i(TAG, "showLocation: "+address);
     }
 
     LocationListener locationListener = new LocationListener() {
