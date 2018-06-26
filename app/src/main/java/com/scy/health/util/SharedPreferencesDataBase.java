@@ -30,9 +30,13 @@ public class SharedPreferencesDataBase {
                 long time = sp.getLong("time_"+id,0);
                 float temperature = sp.getFloat("temperature_"+id,0);
                 int heartbeat = sp.getInt("heartbeat_"+id,0);
+                int bp0 = sp.getInt("bp0_"+id,0);
+                int bp1 = sp.getInt("bp1_"+id,0);
                 tmp.put("time",time);
                 tmp.put("temperature",temperature);
                 tmp.put("heartbeat",heartbeat);
+                tmp.put("bp0",bp0);
+                tmp.put("bp1",bp1);
                 recortds.put(tmp);
             }
             return new JSONObject().put("data",recortds).put("status",1);

@@ -71,16 +71,21 @@ public class LocalReadDataTask extends AsyncTask <String, Void, JSONObject>{
             }
 
             List<Float> yValue_heartbeat = new ArrayList<>();
+            List<Float> yValue_temperature = new ArrayList<>();
+            List<Float> yValue_bp0 = new ArrayList<>();
+            List<Float> yValue_bp1 = new ArrayList<>();
+
             for (int i = 0; i < records.length(); i++) {
                 yValue_heartbeat.add((float)records.getJSONObject(i).getInt("heartbeat"));
+                yValue_temperature.add((float) records.getJSONObject(i).getDouble("temperature"));
+                yValue_bp0.add((float) records.getJSONObject(i).getInt("bp0"));
+                yValue_bp1.add((float) records.getJSONObject(i).getInt("bp1"));
             }
             yValues.add(yValue_heartbeat);
-
-            List<Float> yValue_temperature = new ArrayList<>();
-            for (int i = 0; i < records.length(); i++) {
-                yValue_temperature.add((float) records.getJSONObject(i).getDouble("temperature"));
-            }
             yValues.add(yValue_temperature);
+            yValues.add(yValue_bp0);
+            yValues.add(yValue_bp1);
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -94,11 +99,13 @@ public class LocalReadDataTask extends AsyncTask <String, Void, JSONObject>{
         final List<String> names = new ArrayList<>();
         names.add("心率");
         names.add("体温");
+        names.add("收缩压");
+        names.add("舒张压");
 
         lineChartManager1.showLineChart(xValues, yValues, names, colours);
         lineChartManager1.setDescription("指标趋势图");
         NiceSpinner niceSpinner = (NiceSpinner) view.findViewById(R.id.nice_spinner);
-        LinkedList<String> data=new LinkedList<>(Arrays.asList("所有指标","心率","体温"));
+        LinkedList<String> data=new LinkedList<>(Arrays.asList("所有指标","心率","体温","收缩压","舒张压"));
         niceSpinner.attachDataSource(data);
         niceSpinner.addOnItemClickListener(new AdapterView.OnItemClickListener(){
 
@@ -107,7 +114,7 @@ public class LocalReadDataTask extends AsyncTask <String, Void, JSONObject>{
                 if (i == 0) {
                     lineChartManager1.showLineChart(xValues, yValues, names, colours);
                     Log.i(TAG, "onItemClick: "+yValues);
-                }else
+                } else
                     lineChartManager1.showLineChart(xValues, yValues.get(i-1), names.get(i-1), colours.get(i-1));
             }
         } );
