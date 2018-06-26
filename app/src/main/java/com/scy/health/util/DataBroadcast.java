@@ -31,7 +31,9 @@ public class DataBroadcast implements BluetoothInterface{
                 int[] bp = new int[2];
                 bp[0] = new Random().nextInt(80)+80;
                 bp[1] = new Random().nextInt(60)+50;
-                update(new Random().nextInt(2)+38,new Random().nextInt(3)+78,bp);
+                int temperature = new Random().nextInt(1)+36;
+                int heartbeat = new Random().nextInt(60)+50;
+                update(temperature,heartbeat,bp);
             }
         }, 0,1*1000);
     }
