@@ -23,10 +23,12 @@ import com.scy.health.R;
 import com.scy.health.ViewPagerAdapter;
 import com.scy.health.util.DataBroadcast;
 import com.scy.health.util.LineChartManager;
+import com.scy.health.util.Measurement;
 import com.scy.health.util.XfyunASR;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -35,6 +37,8 @@ import java.util.Set;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
+import static com.scy.health.util.SharedPreferencesDataBase.insert;
+import static com.scy.health.util.SharedPreferencesDataBase.selectBp;
 import static com.scy.health.util.SharedPreferencesDataBase.selectHeartBeat;
 import static com.scy.health.util.SharedPreferencesDataBase.selectTemperature;
 
@@ -58,15 +62,16 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
     private XfyunASR xfyunASR;
     private boolean radioOn;        //是否开启语音播报
     private Set<Integer> hasAnnounced = new HashSet<Integer>();
-
+    private String sex;
     private float temperature;
     private int heartbeat;
+    private int[] bp;
 
     private Handler handler = new Handler(){
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 1:
-                    initView(temperature,heartbeat);
+                    initView(temperature,heartbeat,bp,sex);
                     sweetAlertDialog.cancel();
                     break;
             }
@@ -82,6 +87,7 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
         this.xfyunASR = xfyunASR;
         SharedPreferences sp = context.getSharedPreferences("setting", Context.MODE_PRIVATE);
         this.radioOn = sp.getBoolean("radio",false);
+        this.sex = sp.getString("sex","男");
         Log.i(TAG, "GetBlueToothDataTask: "+radioOn);
     }
 
@@ -105,7 +111,7 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
         }
     }
 
-    private void initView(float temperature,int heartbeat){
+    private void initView(float temperature,int heartbeat,int[] bp,String sex){
         viewPager = (ViewPager) activity.findViewById(R.id.viewPager);
         layout_frame = (FrameLayout) activity.findViewById(R.id.layout_frame);
         layout_point = (LinearLayout) activity.findViewById(R.id.layout_point);
@@ -115,19 +121,38 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
         ArrayList<Float> xValues = new ArrayList<>();
         List<Float> yValue_temperature = new ArrayList<>();
         List<Float> yValue_heartbeat = new ArrayList<>();
-
+        List<List<Float>> yValue_bp = new ArrayList<>();
+        List<String> names = new ArrayList<>();
+        List<Integer> colors = new ArrayList<>();
+        names.add("收缩压");
+        names.add("舒张压");
+        colors.add(Color.BLUE);
+        colors.add(Color.GREEN);
         try {
             JSONArray res = selectTemperature(context,5).getJSONArray("data");
-            Log.i(TAG, "initView: "+res);
+            Log.i(TAG, "initView Temperature:"+res);
             for (int i = 0; i < res.length(); i++) {
                 xValues.add((float) i);
                 yValue_temperature.add((float)(res.getDouble(i)));
             }
             res = selectHeartBeat(context,5).getJSONArray("data");
-            Log.i(TAG, "initView: "+res);
+            Log.i(TAG, "initView HeartBeat: "+res);
             for (int i = 0; i < res.length(); i++) {
                 yValue_heartbeat.add((float)(res.getInt(i)));
             }
+
+            res = selectBp(context,5).getJSONArray("data");
+            List<Float> bp0list = new ArrayList<>();
+            List<Float> bp1list = new ArrayList<>();
+
+            Log.i(TAG, "initView bp:"+res);
+            for (int i = 0; i < res.length(); i++) {
+                JSONObject jsonObject = (res.getJSONObject(i));
+                bp0list.add((float) jsonObject.getInt("0"));
+                bp1list.add((float) jsonObject.getInt("1"));
+            }
+            yValue_bp.add(bp0list);
+            yValue_bp.add(bp1list);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -141,8 +166,9 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
         history_temperature.setDescription("体温趋势图");
 
         TextView txt_num = (TextView)view_temperature.findViewById(R.id.txt_num);
-        txt_num.setText("本次测得体温："+Float.toString(temperature));
+        txt_num.setText("本次测得体温："+Float.toString(temperature)+"℃");
         list_view.add(view_temperature);
+
         //设置心跳页
         View view_heartbeat = LayoutInflater.from(context).inflate(R.layout.fragment_page,null);
         LineChartManager history_heartbeat = new LineChartManager((LineChart)view_heartbeat.findViewById(R.id.history));
@@ -151,18 +177,30 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
         history_heartbeat.setDescription("心率趋势图");
 
         TextView txt_num2 = (TextView)view_heartbeat.findViewById(R.id.txt_num);
-        txt_num2.setText("本次测得心率："+Integer.toString(heartbeat));
+        txt_num2.setText("本次测得心率："+Integer.toString(heartbeat)+"次/分钟");
         list_view.add(view_heartbeat);
+
+
+        //设置血压页
+        View view_bp = LayoutInflater.from(context).inflate(R.layout.fragment_page,null);
+        LineChartManager history_bp = new LineChartManager((LineChart)view_bp.findViewById(R.id.history));
+        history_bp.showLineChart(xValues,yValue_bp,names, colors);
+        history_bp.setDescription("血压趋势图");
+
+        TextView txt_num3 = (TextView)view_bp.findViewById(R.id.txt_num);
+        txt_num3.setText("本次测得血压\n收缩压："+Integer.toString(bp[0])+"mmHg\n舒张压："+Integer.toString(bp[1])+"mmHg");
+        list_view.add(view_bp);
 
         //设置报告页
         View view_summary = LayoutInflater.from(context).inflate(R.layout.fragment_page,null);
         ((LineChart)view_summary.findViewById(R.id.history)).setVisibility(View.GONE);
 
-        TextView txt_num3 = (TextView)view_summary.findViewById(R.id.txt_num);
-//        txt_num3.setText(Measurement.measureIndicator(temperature,heartbeat));
-        list_view.add(view_summary);
+        TextView txt_num4 = (TextView)view_summary.findViewById(R.id.txt_num);
+        txt_num4.setText(Measurement.measureIndicator(temperature,heartbeat,bp,sex));
         LinearLayout.LayoutParams lpp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        txt_num3.setLayoutParams(lpp);
+        txt_num4.setLayoutParams(lpp);
+        list_view.add(view_summary);
+
         adapter = new ViewPagerAdapter(list_view);
         viewPager.setAdapter(adapter);
 
@@ -267,6 +305,8 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
         if (count == 10) {
             this.temperature = temperature;
             this.heartbeat = heartbeat;
+            this.bp = bp;
+            insert(context,temperature,heartbeat,bp);
             Message message = new Message();
             message.what = 1;
             handler.sendMessage(message);
