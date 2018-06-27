@@ -135,7 +135,7 @@ public class WeatherTask extends AsyncTask<String, Void, JSONObject> {
             future_cond.setText(future_cond_text);
             future_tmp.setText(future_tmp_text+"°");
             future_wind.setText(future_wind_text);
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

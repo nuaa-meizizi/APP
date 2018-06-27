@@ -8,9 +8,12 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.provider.Settings;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 
 public class PremissionDialog {
-    public static void showMissingPermissionDialog(final Context context,String content) {
+    private static final String TAG = "PremissionDialog";
+
+    public static void showMissingPermissionDialog(final Context context, String content) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("帮助");
         builder.setMessage(content);
@@ -38,7 +41,13 @@ public class PremissionDialog {
     }
 
     public static boolean lacksPermission(String permission,Context context) {
-        return ContextCompat.checkSelfPermission(context.getApplicationContext(), permission) ==
-                PackageManager.PERMISSION_DENIED;
+        try {
+            return ContextCompat.checkSelfPermission(context.getApplicationContext(), permission) ==
+                    PackageManager.PERMISSION_DENIED;
+        }
+        catch (Exception e){
+            Log.e(TAG, "lacksPermission: ", e);
+            return false;
+        }
     }
 }

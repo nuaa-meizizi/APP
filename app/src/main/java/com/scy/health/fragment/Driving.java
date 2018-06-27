@@ -44,7 +44,6 @@ public class Driving extends Fragment implements DataBroadcastInterface {
     private BottomNavigationView meau;
     private SweetAlertDialog dialog;
     private SharedPreferences sharedPreferences;
-    private String tag = "Driving";
     private LineChartManager heart_beat,blood_pressure,temperature;
     private TextView status;
     private DataBroadcast dataBroadcast;
@@ -53,6 +52,7 @@ public class Driving extends Fragment implements DataBroadcastInterface {
     private XfyunASR xfyunASR;
     private boolean salertOn = true;
     private String sex;
+    private Timer timer;
     private Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -70,6 +70,7 @@ public class Driving extends Fragment implements DataBroadcastInterface {
                             }
                             else {
                                 xfyunASR.speekText("取消报警");
+                                status.setText("正常");
                                 salertOn = true;
                                 baiduWakeUp.start();
                             }
@@ -86,7 +87,7 @@ public class Driving extends Fragment implements DataBroadcastInterface {
                     baiduWakeUp.stop();
                     status.setText((String)msg.obj);
                     xfyunASR.speekText("警报");
-                    Timer timer = new Timer();
+                    timer = new Timer();
                     timer.schedule(new TimerTask() {
                         @Override
                         public void run() {
@@ -159,6 +160,7 @@ public class Driving extends Fragment implements DataBroadcastInterface {
                         meau.setVisibility(View.VISIBLE);
                         backup.setVisibility(View.GONE);
                         meau.selectTab(0);
+                        onDestroyView();
                     }
                 });
                 dialog.show();
@@ -171,12 +173,15 @@ public class Driving extends Fragment implements DataBroadcastInterface {
         super.onDestroyView();
         meau.setVisibility(View.VISIBLE);
         backup.setVisibility(View.GONE);
+        timer.cancel();
+        baiduWakeUp.start();
         dataBroadcast.destroy();
+        ((MainActivity)getActivity()).setTabSelection(0);
     }
 
     public void callPhone() {
         if (PremissionDialog.lacksPermission("android.permission.CALL_PHONE",getContext())){
-            Log.e(tag,"没有电话权限");
+            Log.e(TAG,"没有电话权限");
             getPermission();
         }
         else
