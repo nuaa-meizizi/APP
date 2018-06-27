@@ -28,21 +28,27 @@ public class DataBroadcast implements BluetoothInterface{
         timer = new Timer();
         timer.schedule(new TimerTask(){
             public void run(){
+                //正常眼动：0.623567 0.599057 0 0 0.00358101  0.00353361
+                //疲劳眼动：0.830315 0.800068 0 0.145872 0.00421145 0.00368119
+                double[] eye = {0.623567,0.599057,0,0,0.00358101,0.00353361};
+                double[] eye2 = {0.830315,0.800068,0,0.145872,0.00421145,0.00368119};
+
                 int[] bp = new int[2];
                 bp[0] = new Random().nextInt(80)+80;
                 bp[1] = new Random().nextInt(60)+50;
                 int temperature = new Random().nextInt(1)+36;
                 int heartbeat = new Random().nextInt(60)+50;
-                update(temperature,heartbeat,bp);
+                update(temperature,heartbeat,bp,eye);
             }
         }, 0,1*1000);
     }
 
-    private void update(float temperature,int heartbeat,int[] bp){
+    private void update(float temperature,int heartbeat,int[] bp,double[] eye){
         dataBroadcastInterface.onaTemperatureChanged(temperature);
         dataBroadcastInterface.onHeartbeatChanged(heartbeat);
         dataBroadcastInterface.onBpChanged(bp);
-        dataBroadcastInterface.onChanged(temperature,heartbeat,bp);
+        dataBroadcastInterface.onEyeChanged(eye);
+        dataBroadcastInterface.onChanged(temperature,heartbeat,bp,eye);
     }
 
     public void destroy(){
@@ -75,13 +81,17 @@ public class DataBroadcast implements BluetoothInterface{
     @Override
     public void onReceive(String data) {
         //可以在这里访问网络请求虚拟参数
+        double[] eye = {0.623567,0.599057,0,0,0.00358101,0.00353361};
+        double[] eye2 = {0.830315,0.800068,0,0.145872,0.00421145,0.00368119};
+
         float temperature;
         int heartbeat;
         int[] bp = new int[2];
         bp[0] = new Random().nextInt(80)+80;
-        bp[1] = new Random().nextInt(60)+50;        String[] values = data.split(" ");
+        bp[1] = new Random().nextInt(60)+50;
+        String[] values = data.split(" ");
         temperature = Float.valueOf(values[0]);
         heartbeat = Integer.valueOf(values[1]);
-        update(temperature,heartbeat,bp);
+        update(temperature,heartbeat,bp,eye);
     }
 }

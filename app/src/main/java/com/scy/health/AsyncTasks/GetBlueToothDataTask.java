@@ -296,7 +296,22 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
     }
 
     @Override
-    public void onChanged(float temperature, int heartbeat, int[] bp) {
+    public void onaTemperatureChanged(float temperature) {
+
+    }
+
+    @Override
+    public void onHeartbeatChanged(int heartbeat) {
+
+    }
+
+    @Override
+    public void onBpChanged(int[] bp) {
+
+    }
+
+    @Override
+    public void onChanged(float temperature, int heartbeat, int[] bp, double[] eye) {
         count++;
         if (isCancelled()){
             my_cancel();
@@ -314,17 +329,7 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
     }
 
     @Override
-    public void onaTemperatureChanged(float temperature) {
-
-    }
-
-    @Override
-    public void onHeartbeatChanged(int heartbeat) {
-
-    }
-
-    @Override
-    public void onBpChanged(int[] bp) {
+    public void onEyeChanged(double[] eye) {
 
     }
 }

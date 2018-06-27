@@ -50,7 +50,7 @@ public class Driving extends Fragment implements DataBroadcastInterface {
     private static final String TAG = "DrivingFragment";
     private BaiduWakeUp baiduWakeUp;
     private XfyunASR xfyunASR;
-    private boolean salertOn = true;
+    private volatile boolean salertOn = true;
     private String sex;
     private Timer timer;
     private Handler handler = new Handler(){
@@ -229,17 +229,23 @@ public class Driving extends Fragment implements DataBroadcastInterface {
     }
 
     @Override
-    public void onChanged(float temperature, int heartbeat, int[] bp) {
+    public void onChanged(float temperature, int heartbeat, int[] bp, double[] eye) {
         //监测数据
         if (salertOn) {
-            moniter(temperature,heartbeat, bp);
             salertOn = false;
+            moniter(temperature,heartbeat, bp,eye);
         }
     }
 
-    public void moniter(float temperature, int heartbeat, int[] bp){
+    @Override
+    public void onEyeChanged(double[] eye) {
+
+    }
+
+
+    public void moniter(float temperature, int heartbeat, int[] bp, double[] eye){
         Boolean normal;
-        String res = Measurement.measureIndicator(temperature,heartbeat,bp,sex);
+        String res = Measurement.driveMeasureIndicator(temperature,heartbeat,bp,eye,sex);
         if(res.length() < 2)
             normal = true;
         else
@@ -249,6 +255,9 @@ public class Driving extends Fragment implements DataBroadcastInterface {
             message.what = 2;
             message.obj = res;
             handler.sendMessage(message);
+        }
+        else {
+            salertOn = true;
         }
     }
 }

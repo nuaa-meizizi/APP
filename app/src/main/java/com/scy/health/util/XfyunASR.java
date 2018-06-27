@@ -38,28 +38,64 @@ public class XfyunASR {
     }
     public void speekText(String s) {
         if (s.equals("请吩咐")){           //优先播放本地音频
-            MediaPlayer mMediaPlayer= MediaPlayer.create(context, R.raw.response);
+            final MediaPlayer mMediaPlayer= MediaPlayer.create(context, R.raw.response);
             mMediaPlayer.start();
+            mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mediaPlayer) {
+                    mMediaPlayer.release();
+                }
+            });
         }
         else if (s.equals("好的")){
-            MediaPlayer mMediaPlayer= MediaPlayer.create(context, R.raw.yessir);
+            final MediaPlayer mMediaPlayer= MediaPlayer.create(context, R.raw.yessir);
             mMediaPlayer.start();
+            mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mediaPlayer) {
+                    mMediaPlayer.release();
+                }
+            });
         }
         else if (s.equals("我不能理解你的命令")){
-            MediaPlayer mMediaPlayer= MediaPlayer.create(context, R.raw.failunderstand);
+            final MediaPlayer mMediaPlayer= MediaPlayer.create(context, R.raw.failunderstand);
             mMediaPlayer.start();
+            mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mediaPlayer) {
+                    mMediaPlayer.release();
+                }
+            });
         }
         else if (s.equals("警报")){
-            MediaPlayer mMediaPlayer= MediaPlayer.create(context, R.raw.alert);
+            final MediaPlayer mMediaPlayer= MediaPlayer.create(context, R.raw.alert);
             mMediaPlayer.start();
+            mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mediaPlayer) {
+                    mMediaPlayer.release();
+                }
+            });
         }
         else if (s.equals("联系紧急联系人")){
-            MediaPlayer mMediaPlayer= MediaPlayer.create(context, R.raw.callphone);
+            final MediaPlayer mMediaPlayer= MediaPlayer.create(context, R.raw.callphone);
             mMediaPlayer.start();
+            mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mediaPlayer) {
+                    mMediaPlayer.release();
+                }
+            });
         }
         else if (s.equals("取消报警")){
-            MediaPlayer mMediaPlayer= MediaPlayer.create(context, R.raw.cancel);
+            final MediaPlayer mMediaPlayer= MediaPlayer.create(context, R.raw.cancel);
             mMediaPlayer.start();
+            mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mediaPlayer) {
+                    mMediaPlayer.release();
+                }
+            });
         }
         else{
             SpeechSynthesizer mTts = SpeechSynthesizer.createSynthesizer( context, null);
