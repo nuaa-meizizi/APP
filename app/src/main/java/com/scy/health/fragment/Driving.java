@@ -77,7 +77,7 @@ public class Driving extends Fragment implements DataBroadcastInterface {
                         }
                         @Override
                         public void onError(String errorData) {
-                            xfyunASR.speekText("联系紧急联系人");
+//                            xfyunASR.speekText("联系紧急联系人");
                             callPhone();
                             baiduWakeUp.start();
                         }
@@ -173,7 +173,8 @@ public class Driving extends Fragment implements DataBroadcastInterface {
         super.onDestroyView();
         meau.setVisibility(View.VISIBLE);
         backup.setVisibility(View.GONE);
-        timer.cancel();
+        if (timer != null)
+            timer.cancel();
         baiduWakeUp.start();
         dataBroadcast.destroy();
         ((MainActivity)getActivity()).setTabSelection(0);
@@ -245,7 +246,7 @@ public class Driving extends Fragment implements DataBroadcastInterface {
 
     public void moniter(float temperature, int heartbeat, int[] bp, double[] eye){
         Boolean normal;
-        String res = Measurement.driveMeasureIndicator(temperature,heartbeat,bp,eye,sex);
+        String res = new Measurement().driveMeasureIndicator(temperature,heartbeat,bp,eye,sex);
         if(res.length() < 2)
             normal = true;
         else

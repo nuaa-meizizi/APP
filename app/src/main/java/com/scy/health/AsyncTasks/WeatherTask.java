@@ -9,7 +9,6 @@ import android.widget.TextView;
 
 import com.scy.health.R;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;

@@ -162,7 +162,7 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
         View view_temperature = LayoutInflater.from(context).inflate(R.layout.fragment_page,null);
         LineChartManager history_temperature = new LineChartManager((LineChart)view_temperature.findViewById(R.id.history));
         history_temperature.showLineChart(xValues,yValue_temperature,"体温", Color.BLUE);
-        history_temperature.setHightLimitLine((float) 38.5,"正常体温:38.5",Color.RED);
+//        history_temperature.setHightLimitLine((float) 38.5,"正常体温:38.5",Color.RED);
         history_temperature.setDescription("体温趋势图");
 
         TextView txt_num = (TextView)view_temperature.findViewById(R.id.txt_num);
@@ -173,7 +173,7 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
         View view_heartbeat = LayoutInflater.from(context).inflate(R.layout.fragment_page,null);
         LineChartManager history_heartbeat = new LineChartManager((LineChart)view_heartbeat.findViewById(R.id.history));
         history_heartbeat.showLineChart(xValues,yValue_heartbeat,"心率", Color.BLUE);
-        history_heartbeat.setHightLimitLine((float) 88,"正常心率:88",Color.RED);
+//        history_heartbeat.setHightLimitLine((float) 88,"正常心率:88",Color.RED);
         history_heartbeat.setDescription("心率趋势图");
 
         TextView txt_num2 = (TextView)view_heartbeat.findViewById(R.id.txt_num);

@@ -136,6 +136,7 @@ public class MainActivity extends AppCompatActivity implements EventListener {
                 transaction.commit();
                 break;
             case 2:
+
                 hideFragment(transaction);
                 setting = new MySetting();
                 transaction.replace(R.id.content, setting);
