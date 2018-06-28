@@ -6,4 +6,6 @@ public interface DataBroadcastInterface {
     void onBpChanged(int[] bp);
     void onChanged(float temperature,int heartbeat,int[] bp,double[] eye);
     void onEyeChanged(double[] eye);
+    void onSuccess();
+    void onOverTime(String error);
 }

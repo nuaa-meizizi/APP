@@ -16,6 +16,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.scy.health.Interface.DataBroadcastInterface;
@@ -78,6 +79,13 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
                     break;
                 case 2:
                     txt_num4.setText((String )msg.obj);
+                    break;
+                case 3:
+                    Toast.makeText(context,"蓝牙连接成功",Toast.LENGTH_SHORT).show();
+                    break;
+                case 4:
+                    Toast.makeText(context,"蓝牙连接错误："+(String) msg.obj,Toast.LENGTH_SHORT).show();
+                    sweetAlertDialog.cancel();
                     break;
             }
             super.handleMessage(msg);
@@ -350,5 +358,20 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
     @Override
     public void onEyeChanged(double[] eye) {
 
+    }
+
+    @Override
+    public void onSuccess() {
+        Message message = new Message();
+        message.what = 3;
+        handler.sendMessage(message);
+    }
+
+    @Override
+    public void onOverTime(String error) {
+        Message message = new Message();
+        message.what = 4;
+        message.obj = error;
+        handler.sendMessage(message);
     }
 }

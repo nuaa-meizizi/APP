@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.luseen.luseenbottomnavigation.BottomNavigation.BottomNavigationView;
@@ -114,6 +115,12 @@ public class Driving extends Fragment implements DataBroadcastInterface {
                     else {
                         salertOn = true;
                     }
+                    break;
+                case 4:
+                    Toast.makeText(getContext(),"蓝牙连接成功",Toast.LENGTH_SHORT).show();
+                    break;
+                case 5:
+                    Toast.makeText(getContext(),"蓝牙连接错误："+(String) msg.obj,Toast.LENGTH_SHORT).show();
                     break;
 
             }
@@ -259,6 +266,21 @@ public class Driving extends Fragment implements DataBroadcastInterface {
     @Override
     public void onEyeChanged(double[] eye) {
 
+    }
+
+    @Override
+    public void onSuccess() {
+        Message message = new Message();
+        message.what = 4;
+        handler.sendMessage(message);
+    }
+
+    @Override
+    public void onOverTime(String error) {
+        Message message = new Message();
+        message.what = 5;
+        message.obj = error;
+        handler.sendMessage(message);
     }
 
 
