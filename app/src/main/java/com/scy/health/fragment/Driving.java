@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.github.mikephil.charting.charts.LineChart;
 import com.luseen.luseenbottomnavigation.BottomNavigation.BottomNavigationView;
 import com.scy.health.Interface.DataBroadcastInterface;
+import com.scy.health.Interface.MeasurementInterface;
 import com.scy.health.Interface.XfyunInterface;
 import com.scy.health.R;
 import com.scy.health.activities.MainActivity;
@@ -96,6 +97,23 @@ public class Driving extends Fragment implements DataBroadcastInterface {
                             handler.sendMessage(message);
                         }
                     }, 6500);
+                    break;
+                case 3:
+                    String res = (String)msg.obj;
+                    Boolean normal;
+                    if(res.length() < 2)
+                        normal = true;
+                    else
+                        normal = false;
+                    if (!normal){
+                        Message message = new Message();
+                        message.what = 2;
+                        message.obj = res;
+                        handler.sendMessage(message);
+                    }
+                    else {
+                        salertOn = true;
+                    }
                     break;
 
             }
@@ -245,20 +263,20 @@ public class Driving extends Fragment implements DataBroadcastInterface {
 
 
     public void moniter(float temperature, int heartbeat, int[] bp, double[] eye){
-        Boolean normal;
-        String res = new Measurement().driveMeasureIndicator(temperature,heartbeat,bp,eye,sex);
-        if(res.length() < 2)
-            normal = true;
-        else
-            normal = false;
-        if (!normal){
-            Message message = new Message();
-            message.what = 2;
-            message.obj = res;
-            handler.sendMessage(message);
-        }
-        else {
-            salertOn = true;
-        }
+        new Measurement().driveMeasureIndicator(new MeasurementInterface() {
+            @Override
+            public void onSuccess(String res) {
+                Message message = new Message();
+                message.what = 3;
+                message.obj = res;
+                handler.sendMessage(message);
+            }
+
+            @Override
+            public void onError(String errorData) {
+
+            }
+        },temperature, heartbeat, bp, eye, sex);
+
     }
 }

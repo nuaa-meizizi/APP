@@ -2,6 +2,8 @@ package com.scy.health.util;
 
 import android.util.Log;
 
+import com.scy.health.Interface.MeasurementInterface;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -23,24 +25,24 @@ public class Measurement{
         bp[0]:收缩压
         bp[1]:舒张压
          */
-    private String res;
+    private String res1 = "";
+    private String res2 = "";
 
-    public static String measureIndicator(float temperature, int heartbeat, int[] bp, String sex){
-        String res = "";
+    public void measureIndicator(final MeasurementInterface measurementInterface,float temperature, int heartbeat, int[] bp, String sex){
         if (temperature > 37)
-            res+="体温较正常人偏高\n";
+            res1+="体温较正常人偏高\n";
         else if (temperature < 36)
-            res+="体温较正常人偏低\n";
+            res1+="体温较正常人偏低\n";
         if (heartbeat < 60)
-            res+="心率较正常人偏高\n";
+            res1+="心率较正常人偏高\n";
         else if (heartbeat > 100)
-            res+="心率较正常人偏高\n";
+            res1+="心率较正常人偏高\n";
         if (bp[0]>=140 || bp[1]>=90)
-            res+="血压偏高\n";
+            res1+="血压偏高\n";
         if (bp[0]<90 || bp[1]<60)
-            res+="血压偏低\n";
-        if (res.length() < 2)
-            res = "指标正常，您的身体很健康";
+            res1+="血压偏低\n";
+        if (res1.length() < 2)
+            res1 = "指标正常，您的身体很健康\n";
         FormBody.Builder formBody = new FormBody.Builder();//创建表单请求体
         String args = Float.toString(temperature)+" "+Integer.toString(heartbeat)+" 60 "+Integer.toString(bp[0])+" "+Integer.toString(bp[1]);
         Log.i(TAG, "driveMeasureIndicator: "+args);
@@ -65,33 +67,32 @@ public class Measurement{
                     try {
                         JSONObject jsonObject = new JSONObject(rses);
                         String data = jsonObject.getString("data");
-                        if(data.contains("0")){
-                            //不正常
-                        }
+                        if(data.contains("0"))
+                            res1 += "不健康\n";
+                        measurementInterface.onSuccess(res1);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
                 }
             }
         });
-        return res;
     }
 
-    public String driveMeasureIndicator(float temperature, int heartbeat, int[] bp, double[] eye, String sex){
-        res = "";
+
+    public String driveMeasureIndicator(final MeasurementInterface measurementInterface,float temperature, int heartbeat, int[] bp, double[] eye, String sex){
+        res2 = "";
         if (temperature > 37)
-            res+="体温较正常人偏高\n";
+            res2+="体温较正常人偏高\n";
         else if (temperature < 36)
-            res+="体温较正常人偏低\n";
+            res2+="体温较正常人偏低\n";
         if (heartbeat < 60)
-            res+="心率较正常人偏高\n";
+            res2+="心率较正常人偏高\n";
         else if (heartbeat > 100)
-            res+="心率较正常人偏高\n";
+            res2+="心率较正常人偏高\n";
         if (bp[0]>=140 || bp[1]>=90)
-            res+="血压偏高\n";
+            res2+="血压偏高\n";
         if (bp[0]<90 || bp[1]<60)
-            res+="血压偏低\n";
+            res2+="血压偏低\n";
         FormBody.Builder formBody = new FormBody.Builder();//创建表单请求体
         String args = "";
         for(int i = 0; i < eye.length;i++)
@@ -119,15 +120,17 @@ public class Measurement{
                         JSONObject jsonObject = new JSONObject(rses);
                         String data = jsonObject.getString("data");
                         if(data.contains("-1")){
-                            res+="疲劳驾驶\n";
+                            res2+="疲劳驾驶\n";
                         }
+                        measurementInterface.onSuccess(res2);
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
             }
         });
-        Log.i(TAG, "driveMeasureIndicator: "+res);
-        return "疲劳驾驶\n";
+        Log.i(TAG, "driveMeasureIndicator: "+res2);
+        return res2;
     }
 }

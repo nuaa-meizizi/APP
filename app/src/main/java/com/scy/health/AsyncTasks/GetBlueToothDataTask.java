@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.scy.health.Interface.DataBroadcastInterface;
+import com.scy.health.Interface.MeasurementInterface;
 import com.scy.health.R;
 import com.scy.health.ViewPagerAdapter;
 import com.scy.health.util.DataBroadcast;
@@ -66,6 +67,7 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
     private float temperature;
     private int heartbeat;
     private int[] bp;
+    private  TextView txt_num4;
 
     private Handler handler = new Handler(){
         public void handleMessage(Message msg) {
@@ -73,6 +75,9 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
                 case 1:
                     initView(temperature,heartbeat,bp,sex);
                     sweetAlertDialog.cancel();
+                    break;
+                case 2:
+                    txt_num4.setText((String )msg.obj);
                     break;
             }
             super.handleMessage(msg);
@@ -195,8 +200,22 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
         View view_summary = LayoutInflater.from(context).inflate(R.layout.fragment_page,null);
         ((LineChart)view_summary.findViewById(R.id.history)).setVisibility(View.GONE);
 
-        TextView txt_num4 = (TextView)view_summary.findViewById(R.id.txt_num);
-        txt_num4.setText(Measurement.measureIndicator(temperature,heartbeat,bp,sex));
+        txt_num4 = (TextView)view_summary.findViewById(R.id.txt_num);
+
+        new Measurement().measureIndicator(new MeasurementInterface() {
+            @Override
+            public void onSuccess(String res) {
+                Message message = new Message();
+                message.what = 2;
+                message.obj = res;
+                handler.sendMessage(message);
+            }
+
+            @Override
+            public void onError(String errorData) {
+
+            }
+        },temperature, heartbeat, bp, sex);
         LinearLayout.LayoutParams lpp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         txt_num4.setLayoutParams(lpp);
         list_view.add(view_summary);
