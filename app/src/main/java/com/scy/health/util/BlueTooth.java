@@ -100,7 +100,11 @@ public class BlueTooth {
      * 注销广播
      */
     public void unregisterBTReceiver() {
-        context.unregisterReceiver(BTReceive);
+        try {
+            context.unregisterReceiver(BTReceive);
+        }catch (Exception e){
+            Log.e(TAG, "unregisterBTReceiver: ",e );
+        }
     }
 
     /**

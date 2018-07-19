@@ -61,7 +61,8 @@ public class DataBroadcast implements BluetoothInterface{
                 e.printStackTrace();
             }
         }
-        timer.cancel();
+        if(timer!=null)
+            timer.cancel();
     }
 
     @Override

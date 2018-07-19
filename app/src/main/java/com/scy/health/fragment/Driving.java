@@ -120,7 +120,8 @@ public class Driving extends Fragment implements DataBroadcastInterface {
                     Toast.makeText(getContext(),"蓝牙连接成功",Toast.LENGTH_SHORT).show();
                     break;
                 case 5:
-                    Toast.makeText(getContext(),"蓝牙连接错误："+(String) msg.obj,Toast.LENGTH_SHORT).show();
+                    if (getContext()!=null)
+                        Toast.makeText(getContext(),"蓝牙连接错误："+(String) msg.obj,Toast.LENGTH_SHORT).show();
                     break;
 
             }
@@ -181,10 +182,6 @@ public class Driving extends Fragment implements DataBroadcastInterface {
                 dialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                     @Override
                     public void onClick(SweetAlertDialog sweetAlertDialog) {
-                        dialog.cancel();
-                        meau.setVisibility(View.VISIBLE);
-                        backup.setVisibility(View.GONE);
-                        meau.selectTab(0);
                         onDestroyView();
                     }
                 });
@@ -196,6 +193,8 @@ public class Driving extends Fragment implements DataBroadcastInterface {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        dialog.cancel();
+        meau.selectTab(0);
         meau.setVisibility(View.VISIBLE);
         backup.setVisibility(View.GONE);
         if (timer != null)
