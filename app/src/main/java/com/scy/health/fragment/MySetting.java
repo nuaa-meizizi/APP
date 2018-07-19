@@ -2,6 +2,7 @@ package com.scy.health.fragment;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
@@ -12,19 +13,27 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.scy.health.R;
+import com.scy.health.activities.LoginActivity;
+
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class MySetting extends Fragment {
     private TableRow trsex,contacts;
+    private ImageView sprogress;
+    private ProgressBar progress;
     private TextView phone,sex,clear;
     private SharedPreferences sharedPreferences;
     private Editor editor;
     String single[] = {"男","女"};
+    private SweetAlertDialog dialog;
     String singleChoice;
     private Switch radioOn;
     @Override
@@ -42,6 +51,8 @@ public class MySetting extends Fragment {
         clear = (TextView)view.findViewById(R.id.trclear);
         contacts = (TableRow)view.findViewById(R.id.contacts);
         phone = (TextView)view.findViewById(R.id.phone);
+        sprogress = (ImageView)view.findViewById(R.id.sprogress);
+        progress = (ProgressBar)view.findViewById(R.id.progress);
         sex = (TextView)view.findViewById(R.id.sex);
         radioOn = (Switch)view.findViewById(R.id.radioSwitch);
         sharedPreferences = getActivity().getSharedPreferences("setting", Context.MODE_PRIVATE);
@@ -55,6 +66,41 @@ public class MySetting extends Fragment {
                 Editor editor = sp.edit();
                 editor.clear().apply();
                 Toast.makeText(getContext(),"清除成功",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        sprogress.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String name = sharedPreferences.getString("name",null);
+                String password = sharedPreferences.getString("password",null);
+                if (name != null && password != null)
+                {
+                    sprogress.setVisibility(View.GONE);
+                    progress.setVisibility(View.VISIBLE);
+                    //登陆 同步
+                }
+                else {  //需要登陆
+                    dialog = new SweetAlertDialog(getContext(),SweetAlertDialog.NORMAL_TYPE);
+                    dialog.setContentText("同步功能需要登陆");
+                    dialog.setCancelText("算了");
+                    dialog.setConfirmText("现在登陆");
+                    dialog.showCancelButton(true);
+                    dialog.setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                        @Override
+                        public void onClick(SweetAlertDialog sDialog) {
+                            dialog.cancel();
+                        }
+                    });
+                    dialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                        @Override
+                        public void onClick(SweetAlertDialog sweetAlertDialog) {
+                            Intent intent = new Intent(getContext(), LoginActivity.class);
+                            startActivity(intent);
+                        }
+                    });
+                    dialog.show();
+                }
             }
         });
 

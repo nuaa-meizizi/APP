@@ -114,6 +114,45 @@
                 android:textSize="18dp"
                 android:layout_height="wrap_content"
                 android:text="是否开启语音播报" />
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1px"
+                android:background="@color/LightGrey"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="10dp"
+                    android:textColor="#000000"
+                    android:text="云同步"
+                    android:textSize="18dp"
+                    android:gravity="center|left"/>
+                <ImageView
+                    android:id="@+id/sprogress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:src="@drawable/progress"/>
+                <ProgressBar
+                    android:id="@+id/progress"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_margin="10dp"
+                    android:layout_width="wrap_content"
+                    android:visibility="gone"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1px"
+                android:background="@color/LightGrey"/>
         </LinearLayout>
     </ScrollView>
 </FrameLayout>

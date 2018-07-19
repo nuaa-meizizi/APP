@@ -56,10 +56,12 @@
         </activity>
         <activity
             android:name=".activities.PhysicalExamination"
+            android:label="体检报告"
             android:parentActivityName=".activities.MainActivity"
-            android:screenOrientation="landscape"
-            android:label="体检报告">
-        </activity>
+            android:screenOrientation="landscape"></activity>
+        <activity
+            android:name=".activities.LoginActivity"
+            android:label="@string/title_activity_login"></activity>
     </application>
 
 </manifest>
