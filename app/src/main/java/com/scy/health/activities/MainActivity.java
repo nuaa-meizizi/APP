@@ -29,6 +29,7 @@ import com.tbruyelle.rxpermissions2.RxPermissions;
 import io.reactivex.functions.Consumer;
 
 public class MainActivity extends AppCompatActivity implements EventListener {
+    private static final String TAG = "MainActivity";
     private BottomNavigationView bottomNavigationView;
     private String[] titles = {"首页", "驾驶模式", "个人设置"};
     private BaiduWakeUp baiduWakeUp;
@@ -159,14 +160,14 @@ public class MainActivity extends AppCompatActivity implements EventListener {
     }
 
     public void response(String content) {      //自定义语音指令
-        System.out.println(content);
-        if (content.equals("进入首页")) {
+        Log.i(TAG, "response: "+content);
+        if (content.equals("进入首页") || content.equals("首页")) {
             setTabSelection(0);
             xfyunASR.speekText("好的");
-        } else if (content.equals("驾驶模式")) {
+        } else if (content.equals("开车")) {
             setTabSelection(1);
             xfyunASR.speekText("好的");
-        } else if (content.equals("个人设置")) {
+        } else if (content.equals("个人设置") || content.equals("设置")) {
             setTabSelection(2);
             xfyunASR.speekText("好的");
         } else {
