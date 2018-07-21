@@ -20,6 +20,8 @@ import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import static com.scy.health.util.SharedPreferencesDataBase.savaAll;
+
 public class SynchronizationTask extends AsyncTask<String, Void, JSONObject> {
     private static final String TAG = "SynchronizationTask";
     String synchUrl = "http://app.logicjake.xyz:8080/health/sensor/synchronization";
@@ -89,15 +91,18 @@ public class SynchronizationTask extends AsyncTask<String, Void, JSONObject> {
 
     @Override
     protected void onPostExecute(JSONObject result) {
-        sprogress.setVisibility(View.VISIBLE);
-        progress.setVisibility(View.GONE);
         try {
             if (result.getInt("status") == 130004){
                 Toast.makeText(context,"登陆信息有误或过期",Toast.LENGTH_SHORT).show();
-                editor.remove("token").remove("name").commit();            //清除token数据
+                editor.remove("token").remove("name").remove("password").commit();            //清除token数据
+            }
+            else if (result.getInt("status") == 0){
+                savaAll(context,result.getJSONArray("data"));
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        sprogress.setVisibility(View.VISIBLE);
+        progress.setVisibility(View.GONE);
     }
 }

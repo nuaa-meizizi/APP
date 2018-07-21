@@ -348,7 +348,7 @@ public class PhysicalExaminationTask extends AsyncTask<String, Void, String>  im
             this.temperature = temperature;
             this.heartbeat = heartbeat;
             this.bp = bp;
-            insert(context,temperature,heartbeat,bp,0);
+            insert(context,temperature,heartbeat,45,bp,0);
             Message message = new Message();
             message.what = 1;
             handler.sendMessage(message);
