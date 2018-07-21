@@ -94,7 +94,7 @@ public class SynchronizationTask extends AsyncTask<String, Void, JSONObject> {
         try {
             if (result.getInt("status") == 130004){
                 Toast.makeText(context,"登陆信息有误或过期",Toast.LENGTH_SHORT).show();
-                editor.remove("token").commit();            //清除token数据
+                editor.remove("token").remove("name").commit();            //清除token数据
             }
         } catch (JSONException e) {
             e.printStackTrace();

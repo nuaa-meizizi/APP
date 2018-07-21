@@ -67,6 +67,8 @@ public class MySetting extends Fragment {
         editor = sharedPreferences.edit();
         phone.setText(sharedPreferences.getString("phone","未设置"));
         sex.setText(sharedPreferences.getString("sex","男"));
+        String nameText = sharedPreferences.getString("name","未登录");
+        name.setText(nameText);
         clear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -181,6 +183,8 @@ public class MySetting extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         if (requestCode == LOGIN_REQUEST){
             Log.i(TAG, "onActivityResult: "+"登陆返回");
+            String nameText = sharedPreferences.getString("name","未登录");
+            name.setText(nameText);
             if (dialog!=null)
                dialog.cancel();
             synchronization();
