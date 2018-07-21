@@ -36,7 +36,7 @@ public class SharedPreferencesDataBase {
                 int weight = sp.getInt("weight"+id,45);
                 int type = sp.getInt("type"+id,0);
                 tmp.put("time",time);
-                tmp.put("temperature",temperature);
+                tmp.put("temperature",String.valueOf(temperature));
                 tmp.put("heartbeat",heartbeat);
                 tmp.put("bp0",bp0);
                 tmp.put("bp1",bp1);
@@ -155,7 +155,7 @@ public class SharedPreferencesDataBase {
         for (int i = 0; i < remoteData.length(); i++) {
             try {
                 JSONObject data = remoteData.getJSONObject(i);
-                float temperature = (float)data.getDouble("temperature");
+                float temperature = (float) data.getDouble("temperature");
                 int heartbeat = data.getInt("heartbeat");
                 int[] bp = new int[2];
                 long addTime = data.getLong("addTime");
@@ -166,7 +166,6 @@ public class SharedPreferencesDataBase {
                 save(context,addTime,temperature,heartbeat,weight,bp,type);
             } catch (Exception e) {
                 Log.e(TAG, "savaAll: ", e);
-                e.printStackTrace();
             }
         }
     }
