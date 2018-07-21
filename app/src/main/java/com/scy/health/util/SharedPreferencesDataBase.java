@@ -140,7 +140,7 @@ public class SharedPreferencesDataBase {
         String id = Long.toString(time);
         records.add(id);
         editor.putStringSet("records",records);
-        editor.putLong("time_"+id,System.currentTimeMillis());
+        editor.putLong("time_"+id,time);
         editor.putFloat("temperature_"+id,temperature);
         editor.putInt("heartbeat_"+id,heartbeat);
         editor.putInt("bp0_"+id,bp[0]);
