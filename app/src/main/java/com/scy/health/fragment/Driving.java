@@ -182,7 +182,7 @@ public class Driving extends Fragment implements DataBroadcastInterface {
                 dialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                     @Override
                     public void onClick(SweetAlertDialog sweetAlertDialog) {
-                        onDestroyView();
+                        backToHome();
                     }
                 });
                 dialog.show();
@@ -190,18 +190,22 @@ public class Driving extends Fragment implements DataBroadcastInterface {
         });
     }
 
+    public void backToHome(){
+        meau.selectTab(0);
+        ((MainActivity)getActivity()).setTabSelection(0);
+    }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        dialog.cancel();
-        meau.selectTab(0);
+        if (dialog!=null)
+            dialog.cancel();
         meau.setVisibility(View.VISIBLE);
         backup.setVisibility(View.GONE);
         if (timer != null)
             timer.cancel();
         baiduWakeUp.start();
         dataBroadcast.destroy();
-        ((MainActivity)getActivity()).setTabSelection(0);
     }
 
     public void callPhone() {
