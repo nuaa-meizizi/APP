@@ -87,6 +87,7 @@ public class MySetting extends Fragment {
                         editor.clear().apply();
                         name.setText("未登录");
                         Toast.makeText(getContext(),"清除成功",Toast.LENGTH_SHORT).show();
+                        dialog.cancel();
                     }
                 });
                 dialog.show();
