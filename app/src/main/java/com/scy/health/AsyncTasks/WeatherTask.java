@@ -1,6 +1,7 @@
 package com.scy.health.AsyncTasks;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
@@ -26,11 +27,15 @@ public class WeatherTask extends AsyncTask<String, Void, JSONObject> {
     private Context context;
     private View view;
     private static final String TAG = "WeatherTask";
+    private SharedPreferences sharedPreferences;
+    private SharedPreferences.Editor editor;
 
     public WeatherTask(String location,Context context,View view){
         this.location = location;
         this.context = context;
         this.view = view;
+        sharedPreferences = context.getSharedPreferences("setting", Context.MODE_PRIVATE);
+        editor = sharedPreferences.edit();
     }
 
     @Override
@@ -99,6 +104,7 @@ public class WeatherTask extends AsyncTask<String, Void, JSONObject> {
 
         try {
             String location_text = result.getJSONArray("HeWeather6").getJSONObject(0).getJSONObject("basic").getString("location");
+            String admin_area = result.getJSONArray("HeWeather6").getJSONObject(0).getJSONObject("basic").getString("admin_area");
             String parent_city_text = result.getJSONArray("HeWeather6").getJSONObject(0).getJSONObject("basic").getString("parent_city");
             String tmp_text = result.getJSONArray("HeWeather6").getJSONObject(0).getJSONObject("now").getString("tmp");
             String cond_code = result.getJSONArray("HeWeather6").getJSONObject(0).getJSONObject("now").getString("cond_code");
@@ -112,6 +118,8 @@ public class WeatherTask extends AsyncTask<String, Void, JSONObject> {
             String future_wind_text = result.getJSONArray("HeWeather6").getJSONObject(0).getJSONArray("daily_forecast").getJSONObject(0).getString("wind_dir");
 
             location.setText(parent_city_text+" "+location_text);
+            editor.putString("province",admin_area);
+            editor.commit();
             update_date.setText(df.format(new Date()));
             tmp.setText(tmp_text+"°");
 

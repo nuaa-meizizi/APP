@@ -5,9 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -16,31 +14,31 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import static com.scy.health.util.SharedPreferencesDataBase.savaAll;
-
-public class SynchronizationTask extends AsyncTask<String, Void, JSONObject> {
-    private static final String TAG = "SynchronizationTask";
-    String synchUrl = "http://app.logicjake.xyz:8080/health/sensor/synchronization";
+public class UserInfoTask extends AsyncTask<String, Void, JSONObject> {
+    private static final String TAG = "UserInfoTask";
+    String userInfoSynchUrl = "http://app.logicjake.xyz:8080/health/info/synchinfo";
     private Context context;
-    private JSONObject localdata;
-    private ImageView sprogress;
-    private ProgressBar progress;
-    private String token;
     private SharedPreferences sp;
     private SharedPreferences.Editor editor;
+    private String token;
+    private String sex;
+    private String province;
+    private String phone;
+    private TextView sexView,phoneView;
 
-    public SynchronizationTask(Context context, JSONObject localdata, ImageView sprogress, ProgressBar progress) {
+    public UserInfoTask(Context context, TextView sexView,TextView phoneView) {
         this.context = context;
-        this.sprogress = sprogress;
-        this.progress = progress;
-        this.localdata = localdata;
+        this.sexView = sexView;
+        this.phoneView = phoneView;
         sp = ((Activity)context).getSharedPreferences("setting", Context.MODE_PRIVATE);
         editor = sp.edit();
         token = sp.getString("token",null);
+        province = sp.getString("province","no_exist");
+        phone = sp.getString("phone","no_exist");
+        sex = sp.getString("sex","no_exist");
     }
 
     @Override
@@ -50,18 +48,13 @@ public class SynchronizationTask extends AsyncTask<String, Void, JSONObject> {
         BufferedReader br = null;
         try {
             //接口地址
-            URL uri = new URL(synchUrl+"?token="+token);
+            String param = "?token="+token+"&province="+province+"&phone="+phone+"&sex="+sex;
+            URL uri = new URL(userInfoSynchUrl+param);
             HttpURLConnection connection = (HttpURLConnection) uri.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+            connection.setRequestMethod("GET");
             connection.setReadTimeout(5000);
             connection.setConnectTimeout(10000);
             connection.setRequestProperty("accept", "*/*");
-            //发送参数
-            connection.setDoOutput(true);
-            PrintWriter out = new PrintWriter(connection.getOutputStream());
-            out.print(localdata);
-            out.flush();
             //接收结果
             is = connection.getInputStream();
             br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
@@ -90,22 +83,25 @@ public class SynchronizationTask extends AsyncTask<String, Void, JSONObject> {
     }
 
     @Override
-    protected void onPostExecute(JSONObject result) {
-        if (result!=null) {
+    protected void onPostExecute(JSONObject result){
+        if (result!=null){
             try {
-                if (result.getInt("status") == 130004) {
-                    Toast.makeText(context, "登陆信息有误或过期", Toast.LENGTH_SHORT).show();
-                    editor.remove("token").remove("name").remove("password").commit();            //清除token数据
-                } else if (result.getInt("status") == 0) {
-                    savaAll(context, result.getJSONArray("data"));
+                String sex = result.getJSONObject("data").getString("sex");
+                String phone = result.getJSONObject("data").getString("phone");
+                if (!sex.equals("null") && sex.length()!=0){
+                    editor.putString("sex",sex);
+                    editor.commit();
+                }
+                if (!phone.equals("null") && phone.length()!=0){
+                    editor.putString("phone",phone);
+                    editor.commit();
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-        }
-        else
-            Toast.makeText(context,"同步健康数据失败",Toast.LENGTH_SHORT).show();
-        sprogress.setVisibility(View.VISIBLE);
-        progress.setVisibility(View.GONE);
+            sexView.setText(sp.getString("sex","未设置"));
+            phoneView.setText(sp.getString("phone","未设置"));
+        }else
+            Toast.makeText(context,"同步用户信息失败",Toast.LENGTH_SHORT).show();
     }
 }

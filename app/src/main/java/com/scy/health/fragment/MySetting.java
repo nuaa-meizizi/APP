@@ -22,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.scy.health.AsyncTasks.SynchronizationTask;
+import com.scy.health.AsyncTasks.UserInfoTask;
 import com.scy.health.R;
 import com.scy.health.activities.LoginActivity;
 
@@ -66,7 +67,7 @@ public class MySetting extends Fragment {
         sharedPreferences = getActivity().getSharedPreferences("setting", Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
         phone.setText(sharedPreferences.getString("phone","未设置"));
-        sex.setText(sharedPreferences.getString("sex","男"));
+        sex.setText(sharedPreferences.getString("sex","未设置"));
         String nameText = sharedPreferences.getString("name","未登录");
         name.setText(nameText);
         clear.setOnClickListener(new View.OnClickListener() {
@@ -86,6 +87,8 @@ public class MySetting extends Fragment {
                         editor2.clear().apply();
                         editor.clear().apply();
                         name.setText("未登录");
+                        sex.setText("未设置");
+                        phone.setText("未设置");
                         Toast.makeText(getContext(),"清除成功",Toast.LENGTH_SHORT).show();
                         dialog.cancel();
                     }
@@ -116,6 +119,8 @@ public class MySetting extends Fragment {
                     dialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                         @Override
                         public void onClick(SweetAlertDialog sweetAlertDialog) {
+                            if (dialog!=null)
+                                dialog.cancel();
                             Intent intent = new Intent(getContext(), LoginActivity.class);
                             startActivityForResult(intent,LOGIN_REQUEST);
                         }
@@ -184,10 +189,7 @@ public class MySetting extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         if (requestCode == LOGIN_REQUEST){
             Log.i(TAG, "onActivityResult: "+"登陆返回");
-            String nameText = sharedPreferences.getString("name","未登录");
-            name.setText(nameText);
-            if (dialog!=null)
-               dialog.cancel();
+            name.setText(sharedPreferences.getString("name","未登录"));
             synchronization();
         }
     }
@@ -197,6 +199,7 @@ public class MySetting extends Fragment {
         progress.setVisibility(View.VISIBLE);
         JSONObject localdata = selectAll(getContext(),Integer.MAX_VALUE);
         Log.i(TAG, "synchronization: "+localdata);
+        new UserInfoTask(getContext(),sex,phone).execute();
         new SynchronizationTask(getContext(),localdata,sprogress,progress).execute();
     }
 }
