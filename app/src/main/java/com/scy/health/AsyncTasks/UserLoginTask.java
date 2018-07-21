@@ -2,6 +2,7 @@ package com.scy.health.AsyncTasks;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Button;
@@ -31,6 +32,8 @@ public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
     private Button mEmailSignInButton;
     private SweetAlertDialog dialog;
     private static final String TAG = "UserLoginTask";
+    private SharedPreferences sharedPreferences;
+    private SharedPreferences.Editor editor;
 
     public UserLoginTask(Context context, SweetAlertDialog dialog,Button mEmailSignInButton, EditText mEmailView, EditText mPasswordView, String email, String password) {
         this.context = context;
@@ -40,6 +43,8 @@ public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
         this.mPasswordView = mPasswordView;;
         mEmail = email;
         mPassword = password;
+        sharedPreferences = context.getSharedPreferences("setting", Context.MODE_PRIVATE);
+        editor = sharedPreferences.edit();
     }
 
     @Override
@@ -70,8 +75,13 @@ public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
             }
             Log.d(TAG, "doInBackground() returned: " + sb.toString());
             JSONObject res = new JSONObject(sb.toString());
-            if (res.getInt("status") == 0)
+            if (res.getInt("status") == 0) {
+                editor.putString("name",mEmail);
+                editor.putString("password",mPassword);
+                editor.putString("token",res.getJSONObject("data").getString("token"));
+                editor.commit();
                 return true;
+            }
             else
                 return false;
         } catch (Exception e) {

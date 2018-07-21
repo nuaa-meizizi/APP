@@ -6,17 +6,17 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import com.scy.health.AsyncTasks.GetBlueToothDataTask;
+import com.scy.health.AsyncTasks.PhysicalExaminationTask;
 import com.scy.health.R;
 import com.scy.health.util.XfyunASR;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class PhysicalExamination extends AppCompatActivity {
-    private static final String TAG = "PhysicalExamination";
+    private static final String TAG = "PhysicalExaminationTask";
     private Context context;
     private XfyunASR xfyunASR;
-    private GetBlueToothDataTask GetBlueToothDataTask;
+    private PhysicalExaminationTask PhysicalExaminationTask;
     private SweetAlertDialog sweetAlertDialog;
 
     @Override
@@ -33,17 +33,17 @@ public class PhysicalExamination extends AppCompatActivity {
     }
 
     public void getData(){
-        GetBlueToothDataTask = new GetBlueToothDataTask(context,sweetAlertDialog,xfyunASR);
-        GetBlueToothDataTask.execute();
+        PhysicalExaminationTask = new PhysicalExaminationTask(context,sweetAlertDialog,xfyunASR);
+        PhysicalExaminationTask.execute();
     }
 
     @Override
     public void onDestroy() {
         Log.i(TAG, "onDestroy: 销毁");
-        if (GetBlueToothDataTask != null && GetBlueToothDataTask.getStatus()== AsyncTask.Status.RUNNING && !GetBlueToothDataTask.isCancelled())
+        if (PhysicalExaminationTask != null && PhysicalExaminationTask.getStatus()== AsyncTask.Status.RUNNING && !PhysicalExaminationTask.isCancelled())
         {
-            GetBlueToothDataTask.cancel(true);
-            GetBlueToothDataTask = null;
+            PhysicalExaminationTask.cancel(true);
+            PhysicalExaminationTask = null;
         }
         super.onDestroy();
     }

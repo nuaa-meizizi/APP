@@ -27,7 +27,7 @@ public class WeatherTask extends AsyncTask<String, Void, JSONObject> {
     private View view;
     private static final String TAG = "WeatherTask";
 
-    public  WeatherTask(String location,Context context,View view){
+    public WeatherTask(String location,Context context,View view){
         this.location = location;
         this.context = context;
         this.view = view;

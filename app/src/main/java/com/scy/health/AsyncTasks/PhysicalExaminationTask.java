@@ -44,8 +44,8 @@ import static com.scy.health.util.SharedPreferencesDataBase.selectBp;
 import static com.scy.health.util.SharedPreferencesDataBase.selectHeartBeat;
 import static com.scy.health.util.SharedPreferencesDataBase.selectTemperature;
 
-public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  implements ViewPager.OnPageChangeListener,DataBroadcastInterface {
-    private static final String TAG = "GetBlueToothDataTask";
+public class PhysicalExaminationTask extends AsyncTask<String, Void, String>  implements ViewPager.OnPageChangeListener,DataBroadcastInterface {
+    private static final String TAG = "PhysicalExaminationTask";
     private Context context;
     private Activity activity;
     private int count;          //接受数据次数
@@ -92,7 +92,7 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
         }
     };
 
-    public GetBlueToothDataTask(Context context, SweetAlertDialog sweetAlertDialog, XfyunASR xfyunASR)
+    public PhysicalExaminationTask(Context context, SweetAlertDialog sweetAlertDialog, XfyunASR xfyunASR)
     {
         this.context = context;
         this.activity = (Activity)context;
@@ -101,7 +101,7 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
         SharedPreferences sp = context.getSharedPreferences("setting", Context.MODE_PRIVATE);
         this.radioOn = sp.getBoolean("radio",false);
         this.sex = sp.getString("sex","男");
-        Log.i(TAG, "GetBlueToothDataTask: "+radioOn);
+        Log.i(TAG, "PhysicalExaminationTask: "+radioOn);
     }
 
     @Override
@@ -348,7 +348,7 @@ public class GetBlueToothDataTask extends AsyncTask<String, Void, String>  imple
             this.temperature = temperature;
             this.heartbeat = heartbeat;
             this.bp = bp;
-            insert(context,temperature,heartbeat,bp);
+            insert(context,temperature,heartbeat,bp,0);
             Message message = new Message();
             message.what = 1;
             handler.sendMessage(message);

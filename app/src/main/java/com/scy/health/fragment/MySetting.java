@@ -8,6 +8,7 @@ import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,22 +21,29 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.scy.health.AsyncTasks.SynchronizationTask;
 import com.scy.health.R;
 import com.scy.health.activities.LoginActivity;
 
+import org.json.JSONObject;
+
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
+import static com.scy.health.util.SharedPreferencesDataBase.selectAll;
+
 public class MySetting extends Fragment {
+    private static final String TAG = "MySetting";
     private TableRow trsex,contacts;
     private ImageView sprogress;
     private ProgressBar progress;
-    private TextView phone,sex,clear;
+    private TextView phone,sex,clear,name;
     private SharedPreferences sharedPreferences;
     private Editor editor;
     String single[] = {"男","女"};
     private SweetAlertDialog dialog;
     String singleChoice;
     private Switch radioOn;
+    static final int LOGIN_REQUEST = 0;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -43,7 +51,6 @@ public class MySetting extends Fragment {
         initView(view);
 
         return view;
-
     }
 
     public void initView(View view){
@@ -55,30 +62,41 @@ public class MySetting extends Fragment {
         progress = (ProgressBar)view.findViewById(R.id.progress);
         sex = (TextView)view.findViewById(R.id.sex);
         radioOn = (Switch)view.findViewById(R.id.radioSwitch);
+        name = (TextView)view.findViewById(R.id.name);
         sharedPreferences = getActivity().getSharedPreferences("setting", Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
-        phone.setText(sharedPreferences.getString("phone","10086"));
+        phone.setText(sharedPreferences.getString("phone","未设置"));
         sex.setText(sharedPreferences.getString("sex","男"));
         clear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SharedPreferences sp = getContext().getSharedPreferences("health", Context.MODE_PRIVATE);
-                Editor editor = sp.edit();
-                editor.clear().apply();
-                Toast.makeText(getContext(),"清除成功",Toast.LENGTH_SHORT).show();
+                dialog = new SweetAlertDialog(getContext(),SweetAlertDialog.ERROR_TYPE);
+                dialog.setContentText("数据将会被全清！");
+                dialog.setCancelText("算了");
+                dialog.setConfirmText("确定");
+                dialog.showCancelButton(true);
+                dialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener(){
+
+                    @Override
+                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                        SharedPreferences sp = getContext().getSharedPreferences("health", Context.MODE_PRIVATE);
+                        Editor editor2 = sp.edit();
+                        editor2.clear().apply();
+                        editor.clear().apply();
+                        name.setText("未登录");
+                        Toast.makeText(getContext(),"清除成功",Toast.LENGTH_SHORT).show();
+                    }
+                });
+                dialog.show();
             }
         });
 
         sprogress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String name = sharedPreferences.getString("name",null);
-                String password = sharedPreferences.getString("password",null);
-                if (name != null && password != null)
-                {
-                    sprogress.setVisibility(View.GONE);
-                    progress.setVisibility(View.VISIBLE);
-                    //登陆 同步
+                String token = sharedPreferences.getString("token",null);
+                if (token != null){             //自动登陆
+                    synchronization();
                 }
                 else {  //需要登陆
                     dialog = new SweetAlertDialog(getContext(),SweetAlertDialog.NORMAL_TYPE);
@@ -96,7 +114,7 @@ public class MySetting extends Fragment {
                         @Override
                         public void onClick(SweetAlertDialog sweetAlertDialog) {
                             Intent intent = new Intent(getContext(), LoginActivity.class);
-                            startActivity(intent);
+                            startActivityForResult(intent,LOGIN_REQUEST);
                         }
                     });
                     dialog.show();
@@ -158,5 +176,22 @@ public class MySetting extends Fragment {
                 editor.putBoolean("radio",b).apply();
             }
         });
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        if (requestCode == LOGIN_REQUEST){
+            Log.i(TAG, "onActivityResult: "+"登陆返回");
+            if (dialog!=null)
+               dialog.cancel();
+            synchronization();
+        }
+    }
+
+    public void synchronization(){
+        sprogress.setVisibility(View.GONE);
+        progress.setVisibility(View.VISIBLE);
+        JSONObject localdata = selectAll(getContext(),Integer.MAX_VALUE);
+        Log.i(TAG, "synchronization: "+localdata);
+        new SynchronizationTask(getContext(),localdata,sprogress,progress).execute();
     }
 }
