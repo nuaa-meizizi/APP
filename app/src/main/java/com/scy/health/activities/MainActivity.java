@@ -1,6 +1,7 @@
 package com.scy.health.activities;
 
 import android.Manifest;
+import android.app.Application;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
@@ -40,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements EventListener {
     private TextView title;
     private Context context;
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate (Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         context = this;

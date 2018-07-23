@@ -1,6 +1,7 @@
 package com.scy.health.activities;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -20,6 +22,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.awen.camera.view.TakePhotoActivity;
 import com.scy.health.AsyncTasks.SignUpTask;
 import com.scy.health.AsyncTasks.UserLoginTask;
 import com.scy.health.R;
@@ -30,6 +33,7 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
  * A login screen that offers login via email/password.
  */
 public class LoginActivity extends AppCompatActivity {
+    private static final String TAG = "LoginActivity";
     private UserLoginTask mAuthTask = null;
     private SweetAlertDialog dialog;
     private EditText mEmailView;
@@ -159,6 +163,19 @@ public class LoginActivity extends AppCompatActivity {
                 new SignUpTask(this, dialog, mEmailSignInButton, mEmailView, mPasswordView, email, password).execute((Void) null);
             }
         }
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case TakePhotoActivity.REQUEST_CAPTRUE_CODE: {
+                    String path = data.getStringExtra(TakePhotoActivity.RESULT_PHOTO_PATH);
+                    Log.v(TAG, "图片地址：" + path);
+                    break;
+                }
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }
 
