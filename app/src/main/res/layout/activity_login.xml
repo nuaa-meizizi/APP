@@ -70,10 +70,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="登陆"
+                android:text="登录"
                 android:textSize="18dp"
                 android:textStyle="bold" />
 
+            <Button
+                android:id="@+id/face_button"
+                style="?android:textAppearanceSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="刷脸登录"
+                android:textSize="18dp"
+                android:textStyle="bold"/>
+
         </LinearLayout>
     </ScrollView>
+
 </LinearLayout>

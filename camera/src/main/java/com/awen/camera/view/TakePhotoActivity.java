@@ -47,6 +47,7 @@ public class TakePhotoActivity extends Activity implements CameraFocusView.IAuto
     private int mCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
     public final static String RESULT_PHOTO_PATH = "photoPath";
     public static final int REQUEST_CAPTRUE_CODE = 100;
+    public static final int REQUEST_LOGIN_CODE = 101;
     private boolean isSignUp = false;
     private String uid;
     private boolean canTakePhoto = true;
@@ -112,13 +113,13 @@ public class TakePhotoActivity extends Activity implements CameraFocusView.IAuto
                 savePhoto(uid);
             }
         });
-        if (!isSignUp) {
+        if (!isSignUp) {        //登陆
+            takePhotoBtn.setVisibility(View.GONE);
             cameraSurfaceView.setMyFaceDetectionListener(new MyFaceDetectionListener() {
                 @Override
                 public void onFaceDetection(Camera.Face[] faces, Camera camera) {
-                    Log.i(TAG, "onFaceDetection: sassssssssssssssss");
-                    if (canTakePhoto)
-                        takePhoto();
+                if (canTakePhoto)
+                    takePhoto();
                 }
             });
         }
@@ -226,5 +227,4 @@ public class TakePhotoActivity extends Activity implements CameraFocusView.IAuto
         setResult(RESULT_OK, new Intent().putExtra(RESULT_PHOTO_PATH, path));
         finish();
     }
-
 }

@@ -38,11 +38,12 @@ public class LoginActivity extends AppCompatActivity {
     private SweetAlertDialog dialog;
     private EditText mEmailView;
     private EditText mPasswordView;
-    private Button mEmailSignInButton;
+    private Button mEmailSignInButton,faceLoginButton;
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
     private TextView changeFunction;
     final SpannableStringBuilder style = new SpannableStringBuilder();
+    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,9 +52,10 @@ public class LoginActivity extends AppCompatActivity {
         mEmailView = (EditText) findViewById(R.id.email);
         mPasswordView = (EditText) findViewById(R.id.password);
         changeFunction = (TextView)findViewById(R.id.toRegister);
+        faceLoginButton = (Button)findViewById(R.id.face_button);
         sharedPreferences = getSharedPreferences("setting", Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
-
+        context = this;
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -70,6 +72,14 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 attemptLoginOrSignup();
+            }
+        });
+
+        faceLoginButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context,TakePhotoActivity.class);
+                startActivityForResult(intent, TakePhotoActivity.REQUEST_LOGIN_CODE);
             }
         });
 
@@ -170,7 +180,14 @@ public class LoginActivity extends AppCompatActivity {
             switch (requestCode) {
                 case TakePhotoActivity.REQUEST_CAPTRUE_CODE: {
                     String path = data.getStringExtra(TakePhotoActivity.RESULT_PHOTO_PATH);
-                    Log.v(TAG, "图片地址：" + path);
+                    Log.v(TAG, "REQUEST_CAPTRUE_CODE：" + path);
+                    //注册提交图片
+                    break;
+                }
+                case TakePhotoActivity.REQUEST_LOGIN_CODE:{
+                    String path = data.getStringExtra(TakePhotoActivity.RESULT_PHOTO_PATH);
+                    Log.v(TAG, "REQUEST_LOGIN_CODE：" + path);
+                    //登录提交图片
                     break;
                 }
             }

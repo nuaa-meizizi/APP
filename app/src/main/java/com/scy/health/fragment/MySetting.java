@@ -119,8 +119,9 @@ public class MySetting extends Fragment {
                     dialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                         @Override
                         public void onClick(SweetAlertDialog sweetAlertDialog) {
-                            if (dialog!=null)
+                            if (dialog!=null) {
                                 dialog.cancel();
+                            }
                             Intent intent = new Intent(getContext(), LoginActivity.class);
                             startActivityForResult(intent,LOGIN_REQUEST);
                         }
@@ -187,9 +188,10 @@ public class MySetting extends Fragment {
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data){
+        Log.d(TAG, "onActivityResult: "+requestCode);
+
         if (requestCode == LOGIN_REQUEST){
             Log.i(TAG, "onActivityResult: "+"登陆返回");
-            name.setText(sharedPreferences.getString("name","未登录"));
             synchronization();
         }
     }
@@ -197,6 +199,7 @@ public class MySetting extends Fragment {
     public void synchronization(){
         sprogress.setVisibility(View.GONE);
         progress.setVisibility(View.VISIBLE);
+        name.setText(sharedPreferences.getString("name","未登录"));
         JSONObject localdata = selectAll(getContext(),Integer.MAX_VALUE);
         Log.i(TAG, "synchronization: "+localdata);
         new UserInfoTask(getContext(),sex,phone).execute();

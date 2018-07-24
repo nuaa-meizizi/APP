@@ -1,7 +1,6 @@
 package com.scy.health.activities;
 
 import android.Manifest;
-import android.app.Application;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
@@ -200,5 +199,4 @@ public class MainActivity extends AppCompatActivity implements EventListener {
                     }
                 });
     }
-
 }
