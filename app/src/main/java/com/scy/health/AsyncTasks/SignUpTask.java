@@ -113,6 +113,7 @@ public class SignUpTask extends AsyncTask<Void, Void, JSONObject> {
                             if (mdialog!=null)
                                 mdialog.cancel();
                             Intent intent = new Intent(context, TakePhotoActivity.class);
+                            intent.putExtra("isSignUp",true);
                             try {
                                 intent.putExtra("uid",res.getJSONObject("data").getString("id"));
                             } catch (JSONException e) {

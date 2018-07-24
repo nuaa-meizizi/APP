@@ -8,9 +8,12 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.awen.camera.MyFaceDetectionListener;
 import com.awen.camera.R;
 import com.awen.camera.model.CameraModel;
 import com.awen.camera.widget.CameraFocusView;
@@ -44,6 +47,9 @@ public class TakePhotoActivity extends Activity implements CameraFocusView.IAuto
     private int mCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
     public final static String RESULT_PHOTO_PATH = "photoPath";
     public static final int REQUEST_CAPTRUE_CODE = 100;
+    private boolean isSignUp = false;
+    private String uid;
+    private boolean canTakePhoto = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +57,8 @@ public class TakePhotoActivity extends Activity implements CameraFocusView.IAuto
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_take_photo);
+        isSignUp = getIntent().getBooleanExtra("isSignUp",false);
+        uid = getIntent().getStringExtra("uid");
         init();
     }
 
@@ -98,6 +106,22 @@ public class TakePhotoActivity extends Activity implements CameraFocusView.IAuto
                 takePhoto();
             }
         });
+        okBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                savePhoto(uid);
+            }
+        });
+        if (!isSignUp) {
+            cameraSurfaceView.setMyFaceDetectionListener(new MyFaceDetectionListener() {
+                @Override
+                public void onFaceDetection(Camera.Face[] faces, Camera camera) {
+                    Log.i(TAG, "onFaceDetection: sassssssssssssssss");
+                    if (canTakePhoto)
+                        takePhoto();
+                }
+            });
+        }
     }
 
     @Override
@@ -106,6 +130,7 @@ public class TakePhotoActivity extends Activity implements CameraFocusView.IAuto
     }
 
     private void takePhoto() {
+        canTakePhoto = false;
         cameraSurfaceView.takePicture(new Camera.PictureCallback() {
             @Override
             public void onPictureTaken(final byte[] data, Camera camera) {
@@ -113,18 +138,19 @@ public class TakePhotoActivity extends Activity implements CameraFocusView.IAuto
                     return;
                 cameraSurfaceView.getmCamera().stopPreview();// 关闭预览
                 photoData = data;
-                Intent intent = getIntent();
-                String uid = intent.getStringExtra("uid");
-                savePhoto(uid);
-//                cancelBtn.setVisibility(View.VISIBLE);
-//                okBtn.setVisibility(View.VISIBLE);
-//                takePhotoBtn.setVisibility(View.GONE);
-//                cameraTopLayout.setVisibility(View.GONE);
-//                cameraFocusView.setVisibility(View.GONE);
-//                Animation leftAnim =  AnimationUtils.loadAnimation(TakePhotoActivity.this, R.anim.anim_slide_left);
-//                Animation rightAnim =  AnimationUtils.loadAnimation(TakePhotoActivity.this, R.anim.anim_slide_right);
-//                cancelBtn.setAnimation(leftAnim);
-//                okBtn.setAnimation(rightAnim);
+                if (isSignUp){
+                    cancelBtn.setVisibility(View.VISIBLE);
+                    okBtn.setVisibility(View.VISIBLE);
+                    takePhotoBtn.setVisibility(View.GONE);
+                    cameraTopLayout.setVisibility(View.GONE);
+                    cameraFocusView.setVisibility(View.GONE);
+                    Animation leftAnim =  AnimationUtils.loadAnimation(TakePhotoActivity.this, R.anim.anim_slide_left);
+                    Animation rightAnim =  AnimationUtils.loadAnimation(TakePhotoActivity.this, R.anim.anim_slide_right);
+                    cancelBtn.setAnimation(leftAnim);
+                    okBtn.setAnimation(rightAnim);
+                }
+                else
+                    savePhoto(uid);
             }
         });
     }
@@ -138,6 +164,7 @@ public class TakePhotoActivity extends Activity implements CameraFocusView.IAuto
             cameraFocusView.setVisibility(View.VISIBLE);
         }
         cameraSurfaceView.getmCamera().startPreview();// 开启预览
+        canTakePhoto = true;
     }
 
 

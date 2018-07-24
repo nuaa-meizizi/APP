@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.awen.camera.MyFaceDetectionListener;
 import com.awen.camera.util.LogUtil;
 import com.awen.camera.util.ScreenSizeUtil;
 import com.awen.camera.util.ToastUtil;
@@ -24,9 +25,14 @@ import java.util.List;
 /**
  * Created by AwenZeng on 2016/12/5.
  */
-public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Callback, Camera.AutoFocusCallback {
+public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Callback, Camera.AutoFocusCallback{
     private static final String TAG = CameraSurfaceView.class.getName();
 
+    public void setMyFaceDetectionListener(MyFaceDetectionListener myFaceDetectionListener) {
+        this.myFaceDetectionListener = myFaceDetectionListener;
+    }
+
+    private MyFaceDetectionListener myFaceDetectionListener;
     private Context mContext;
     private SurfaceHolder holder;
     private Camera mCamera;
@@ -72,6 +78,21 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
         }
     }
 
+    public void setFaceListen(){
+        int maxNumDetectedFaces = mCamera.getParameters().getMaxNumDetectedFaces();
+        if (maxNumDetectedFaces > 0) {
+            mCamera.setFaceDetectionListener(new Camera.FaceDetectionListener() {
+                @Override
+                public void onFaceDetection(Camera.Face[] faces, Camera camera) {
+                    if (myFaceDetectionListener!=null)
+                        myFaceDetectionListener.onFaceDetection(faces,camera);
+                }
+            });
+            mCamera.startPreview();
+            mCamera.startFaceDetection();
+        }
+    }
+
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         if (mCamera == null) {
@@ -88,6 +109,7 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            setFaceListen();
         }
 
     }
@@ -98,7 +120,6 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
             setCameraParams(DEFAULT_PHOTO_WIDTH, DEFAULT_PHOTO_HEIGHT);
             mCamera.startPreview();
         }
-
     }
 
     @Override
