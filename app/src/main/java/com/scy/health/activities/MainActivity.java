@@ -1,8 +1,13 @@
 package com.scy.health.activities;
 
 import android.Manifest;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +21,7 @@ import com.luseen.luseenbottomnavigation.BottomNavigation.BottomNavigationItem;
 import com.luseen.luseenbottomnavigation.BottomNavigation.BottomNavigationView;
 import com.luseen.luseenbottomnavigation.BottomNavigation.OnBottomNavigationItemClickListener;
 import com.scy.health.Interface.XfyunInterface;
+import com.scy.health.LiveService;
 import com.scy.health.R;
 import com.scy.health.fragment.Driving;
 import com.scy.health.fragment.Home;
@@ -28,6 +34,8 @@ import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import io.reactivex.functions.Consumer;
 
+import static com.scy.health.util.AppUtils.getIMEI;
+
 public class MainActivity extends AppCompatActivity implements EventListener {
     private static final String TAG = "MainActivity";
     private BottomNavigationView bottomNavigationView;
@@ -39,6 +47,15 @@ public class MainActivity extends AppCompatActivity implements EventListener {
     private MySetting setting;
     private TextView title;
     private Context context;
+    private ServiceConnection conn = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder binder) {
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+        }
+    };
     @Override
     protected void onCreate (Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +68,21 @@ public class MainActivity extends AppCompatActivity implements EventListener {
         MultPermission();
         initView();
         setTabSelection(0);
+        checkIMEI();
+        Intent intent = new Intent(this, LiveService.class);
+        bindService(intent, conn, BIND_AUTO_CREATE);
+    }
+
+    private void checkIMEI(){
+        SharedPreferences sharedPreferences = getSharedPreferences("setting", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        if (PremissionDialog.lacksPermission("android.permission.READ_PHONE_STATE",context)){
+            MultPermission();
+        }else {
+            String IMEI = getIMEI(context);
+            editor.putString("imei",IMEI);
+            editor.commit();
+        }
     }
 
     public XfyunASR getXfyunASR(){
@@ -180,6 +212,7 @@ public class MainActivity extends AppCompatActivity implements EventListener {
         rxPermissions.requestEach(Manifest.permission.RECORD_AUDIO,
                 Manifest.permission.CALL_PHONE,
                 Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.READ_PHONE_STATE,
                 Manifest.permission.ACCESS_FINE_LOCATION)//权限名称，多个权限之间逗号分隔开
                 .subscribe(new Consumer<Permission>(){
                     @Override
@@ -193,6 +226,10 @@ public class MainActivity extends AppCompatActivity implements EventListener {
                             PremissionDialog.showMissingPermissionDialog(context,getString(R.string.LACK_CALL_PHONE));
                         }
                         if(permission.name.equals(Manifest.permission.ACCESS_COARSE_LOCATION) && !permission.granted){
+                            System.out.println("权限被拒绝");
+                            PremissionDialog.showMissingPermissionDialog(context,getString(R.string.LACK_LOCATION));
+                        }
+                        if(permission.name.equals(Manifest.permission.READ_PHONE_STATE) && !permission.granted){
                             System.out.println("权限被拒绝");
                             PremissionDialog.showMissingPermissionDialog(context,getString(R.string.LACK_LOCATION));
                         }

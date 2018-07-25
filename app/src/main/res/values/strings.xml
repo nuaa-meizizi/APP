@@ -2,6 +2,7 @@
     <string name="app_name">健康助手</string>
     <string name="LACK_RECORD_AUDIO">缺少麦克风权限，健康助手无法语音播报交互，请到设置界面的权限管理赋予权限</string>
     <string name="LACK_CALL_PHONE">健康助手需要拨打电话权限，以在紧急情况下拨打紧急联系人电话，请到设置界面的权限管理赋予权限</string>
+    <string name="LACK_PHONE">健康助手需要读取设备身份码，请到设置界面的权限管理赋予权限</string>
     <string name="LACK_LOCATION">健康助手需要根据位置信息获得天气数据，请到设置界面的权限管理赋予权限</string>
     <string name="title_activity_login">登陆</string>
 

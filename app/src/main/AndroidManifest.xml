@@ -6,6 +6,7 @@
     <!-- begin: baidu speech sdk  权限 -->
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -21,13 +22,13 @@
 
     <!-- end: baidu speech sdk  权限 -->
     <application
-        tools:replace="android:icon"
+        android:name=".activities.CameraDemoApp"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:name=".activities.CameraDemoApp"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:replace="android:icon">
 
         <!-- begin: baidu speech sdk  参数 -->
         <meta-data
@@ -58,10 +59,15 @@
             android:name=".activities.PhysicalExamination"
             android:label="体检报告"
             android:parentActivityName=".activities.MainActivity"
-            android:screenOrientation="landscape"></activity>
+            android:screenOrientation="landscape" />
         <activity
             android:name=".activities.LoginActivity"
-            android:label="@string/title_activity_login"></activity>
+            android:label="@string/title_activity_login" />
+
+        <service
+            android:name=".LiveService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>
