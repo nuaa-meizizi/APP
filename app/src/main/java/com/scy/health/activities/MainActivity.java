@@ -133,6 +133,7 @@ public class MainActivity extends AppCompatActivity implements EventListener {
     }
 
     public void initView() {
+        title = (TextView) findViewById(R.id.title);
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomview);
         BottomNavigationItem home = new BottomNavigationItem
                 ("首页", ContextCompat.getColor(this, R.color.colorAccent), R.drawable.home);
@@ -150,8 +151,7 @@ public class MainActivity extends AppCompatActivity implements EventListener {
                 setTabSelection(index);
             }
         });
-
-        title = (TextView) findViewById(R.id.title);
+        bottomNavigationView.selectTab(0);
     }
 
     public void setTabSelection(int index) {
