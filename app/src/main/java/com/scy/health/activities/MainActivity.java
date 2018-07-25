@@ -97,6 +97,7 @@ public class MainActivity extends AppCompatActivity implements EventListener {
     protected void onDestroy() {
         super.onDestroy();
         baiduWakeUp.stop();
+        unbindService(conn);
     }
 
     @Override
@@ -213,6 +214,7 @@ public class MainActivity extends AppCompatActivity implements EventListener {
                 Manifest.permission.CALL_PHONE,
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.READ_PHONE_STATE,
+                Manifest.permission.CAMERA,
                 Manifest.permission.ACCESS_FINE_LOCATION)//权限名称，多个权限之间逗号分隔开
                 .subscribe(new Consumer<Permission>(){
                     @Override
@@ -232,6 +234,10 @@ public class MainActivity extends AppCompatActivity implements EventListener {
                         if(permission.name.equals(Manifest.permission.READ_PHONE_STATE) && !permission.granted){
                             System.out.println("权限被拒绝");
                             PremissionDialog.showMissingPermissionDialog(context,getString(R.string.LACK_LOCATION));
+                        }
+                        if(permission.name.equals(Manifest.permission.CAMERA) && !permission.granted){
+                            System.out.println("权限被拒绝");
+                            PremissionDialog.showMissingPermissionDialog(context,getString(R.string.LACK_CAMERA));
                         }
                     }
                 });

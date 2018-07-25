@@ -1,5 +1,6 @@
 package com.scy.health.activities;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -26,8 +27,11 @@ import com.awen.camera.view.TakePhotoActivity;
 import com.scy.health.AsyncTasks.SignUpTask;
 import com.scy.health.AsyncTasks.UserLoginTask;
 import com.scy.health.R;
+import com.scy.health.util.PremissionDialog;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import io.reactivex.functions.Consumer;
 
 /**
  * A login screen that offers login via email/password.
@@ -78,8 +82,12 @@ public class LoginActivity extends AppCompatActivity {
         faceLoginButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(context,TakePhotoActivity.class);
-                startActivityForResult(intent, TakePhotoActivity.REQUEST_LOGIN_CODE);
+                if (PremissionDialog.lacksPermission("android.permission.CAMERA",context)){
+                    getPermission();
+                }else {
+                    Intent intent = new Intent(context,TakePhotoActivity.class);
+                    startActivityForResult(intent, TakePhotoActivity.REQUEST_LOGIN_CODE);
+                }
             }
         });
 
@@ -193,6 +201,22 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void getPermission(){
+        RxPermissions rxPermissions = new RxPermissions(this); // where this is an Activity instance
+        rxPermissions.request(Manifest.permission.CAMERA)
+                .subscribe(new Consumer<Boolean>() {
+                    @Override
+                    public void accept(Boolean granted) throws Exception {
+                        if (granted) { // 在android 6.0之前会默认返回true
+                            Intent intent = new Intent(context,TakePhotoActivity.class);
+                            startActivityForResult(intent, TakePhotoActivity.REQUEST_LOGIN_CODE);
+                        } else {
+                            PremissionDialog.showMissingPermissionDialog(context,getString(R.string.LACK_CAMERA));
+                        }
+                    }
+                });
     }
 }
 

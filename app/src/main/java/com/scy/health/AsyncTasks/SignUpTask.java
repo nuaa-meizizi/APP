@@ -1,5 +1,6 @@
 package com.scy.health.AsyncTasks;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +12,8 @@ import android.widget.EditText;
 
 import com.awen.camera.view.TakePhotoActivity;
 import com.scy.health.R;
+import com.scy.health.util.PremissionDialog;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,6 +26,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import io.reactivex.functions.Consumer;
 
 public class SignUpTask extends AsyncTask<Void, Void, JSONObject> {
     private final String mEmail;
@@ -37,6 +41,7 @@ public class SignUpTask extends AsyncTask<Void, Void, JSONObject> {
     private static final String TAG = "SignUpTask";
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
+    private Intent intent;
 
     public SignUpTask(Context context, SweetAlertDialog dialog,Button mEmailSignInButton, EditText mEmailView, EditText mPasswordView, String email, String password) {
         this.context = context;
@@ -112,14 +117,19 @@ public class SignUpTask extends AsyncTask<Void, Void, JSONObject> {
                         public void onClick(SweetAlertDialog sweetAlertDialog) {
                             if (mdialog!=null)
                                 mdialog.cancel();
-                            Intent intent = new Intent(context, TakePhotoActivity.class);
-                            intent.putExtra("isSignUp",true);
                             try {
-                                intent.putExtra("uid",res.getJSONObject("data").getString("id"));
+                                if (PremissionDialog.lacksPermission("android.permission.CAMERA",context)){
+                                    getPermission();
+                                }else {
+                                    intent = new Intent(context, TakePhotoActivity.class);
+                                    intent.putExtra("isSignUp",true);
+                                    intent.putExtra("uid",res.getJSONObject("data").getString("id"));
+                                    ((Activity) context).startActivityForResult(intent, TakePhotoActivity.REQUEST_CAPTRUE_CODE);
+                                }
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-                            ((Activity)context).startActivityForResult(intent, TakePhotoActivity.REQUEST_CAPTRUE_CODE);
+
                         }
                     });
                     mdialog.show();
@@ -140,5 +150,20 @@ public class SignUpTask extends AsyncTask<Void, Void, JSONObject> {
     protected void onCancelled() {
         dialog.cancel();
         mEmailSignInButton.setClickable(true);
+    }
+
+    private void getPermission() {
+        RxPermissions rxPermissions = new RxPermissions((Activity) context); // where this is an Activity instance
+        rxPermissions.request(Manifest.permission.CAMERA)
+                .subscribe(new Consumer<Boolean>() {
+                    @Override
+                    public void accept(Boolean granted) throws Exception {
+                        if (granted) { // 在android 6.0之前会默认返回true
+                            ((Activity) context).startActivityForResult(intent, TakePhotoActivity.REQUEST_CAPTRUE_CODE);
+                        } else {
+                            PremissionDialog.showMissingPermissionDialog(context, context.getString(R.string.LACK_CAMERA));
+                        }
+                    }
+                });
     }
 }
