@@ -25,6 +25,8 @@ import android.widget.TextView;
 
 import com.awen.camera.view.TakePhotoActivity;
 import com.scy.health.AsyncTasks.SignUpTask;
+import com.scy.health.AsyncTasks.UploadKnowTask;
+import com.scy.health.AsyncTasks.UploadUnKnowTask;
 import com.scy.health.AsyncTasks.UserLoginTask;
 import com.scy.health.R;
 import com.scy.health.util.PremissionDialog;
@@ -189,12 +191,16 @@ public class LoginActivity extends AppCompatActivity {
                 case TakePhotoActivity.REQUEST_CAPTRUE_CODE: {
                     String path = data.getStringExtra(TakePhotoActivity.RESULT_PHOTO_PATH);
                     Log.v(TAG, "REQUEST_CAPTRUE_CODE：" + path);
+                    dialog.show();
+                    new UploadKnowTask(this, dialog, path).execute((Void) null);
                     //注册提交图片
                     break;
                 }
                 case TakePhotoActivity.REQUEST_LOGIN_CODE:{
                     String path = data.getStringExtra(TakePhotoActivity.RESULT_PHOTO_PATH);
                     Log.v(TAG, "REQUEST_LOGIN_CODE：" + path);
+                    dialog.show();
+                    new UploadUnKnowTask(this, dialog, path).execute((Void) null);
                     //登录提交图片
                     break;
                 }
