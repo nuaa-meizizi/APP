@@ -215,6 +215,7 @@ public class MainActivity extends AppCompatActivity implements EventListener {
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.READ_PHONE_STATE,
                 Manifest.permission.CAMERA,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.ACCESS_FINE_LOCATION)//权限名称，多个权限之间逗号分隔开
                 .subscribe(new Consumer<Permission>(){
                     @Override
@@ -238,6 +239,10 @@ public class MainActivity extends AppCompatActivity implements EventListener {
                         if(permission.name.equals(Manifest.permission.CAMERA) && !permission.granted){
                             System.out.println("权限被拒绝");
                             PremissionDialog.showMissingPermissionDialog(context,getString(R.string.LACK_CAMERA));
+                        }
+                        if(permission.name.equals(Manifest.permission.WRITE_EXTERNAL_STORAGE) && !permission.granted){
+                            System.out.println("权限被拒绝");
+                            PremissionDialog.showMissingPermissionDialog(context,getString(R.string.LACK_WRITE_EXTERNAL_STORAGE));
                         }
                     }
                 });

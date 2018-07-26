@@ -5,6 +5,7 @@
     <string name="LACK_PHONE">健康助手需要读取设备身份码，请到设置界面的权限管理赋予权限</string>
     <string name="LACK_CAMERA">健康助手需要打开相机，请到设置界面的权限管理赋予权限</string>
     <string name="LACK_LOCATION">健康助手需要根据位置信息获得天气数据，请到设置界面的权限管理赋予权限</string>
+    <string name="LACK_WRITE_EXTERNAL_STORAGE">健康助手需要存储权限，请到设置界面的权限管理赋予权限</string>
     <string name="title_activity_login">登陆</string>
 
     <!-- Strings related to login -->

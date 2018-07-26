@@ -58,7 +58,7 @@ public class CameraModel {
     }
 
     public String handlePhoto(byte[] data, int cameraId,String uid) {
-        String filePath = FileUtil.saveFile(data, "/DCIM",uid);
+        String filePath = FileUtil.saveFile(data, "/health",uid);
         if (!TextUtils.isEmpty(filePath)) {
             int degree = BitmapUtil.getPhotoDegree(filePath);
             Log.i(TAG, degree + "");

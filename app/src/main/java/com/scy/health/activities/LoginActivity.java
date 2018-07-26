@@ -191,6 +191,8 @@ public class LoginActivity extends AppCompatActivity {
                 case TakePhotoActivity.REQUEST_CAPTRUE_CODE: {
                     String path = data.getStringExtra(TakePhotoActivity.RESULT_PHOTO_PATH);
                     Log.v(TAG, "REQUEST_CAPTRUE_CODE：" + path);
+                    dialog = new SweetAlertDialog(LoginActivity.this,SweetAlertDialog.PROGRESS_TYPE);
+                    dialog.setCancelable(false);
                     dialog.show();
                     new UploadKnowTask(this, dialog, path).execute((Void) null);
                     //注册提交图片
@@ -199,6 +201,8 @@ public class LoginActivity extends AppCompatActivity {
                 case TakePhotoActivity.REQUEST_LOGIN_CODE:{
                     String path = data.getStringExtra(TakePhotoActivity.RESULT_PHOTO_PATH);
                     Log.v(TAG, "REQUEST_LOGIN_CODE：" + path);
+                    dialog = new SweetAlertDialog(LoginActivity.this,SweetAlertDialog.PROGRESS_TYPE);
+                    dialog.setCancelable(false);
                     dialog.show();
                     new UploadUnKnowTask(this, dialog, path).execute((Void) null);
                     //登录提交图片

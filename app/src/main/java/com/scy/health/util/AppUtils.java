@@ -108,4 +108,8 @@ public class AppUtils {
         return ip;
     }
 
+    public static String getPicName(String path){
+        String[] tokens = path.split("/");
+        return tokens[tokens.length-1];
+    }
 }
