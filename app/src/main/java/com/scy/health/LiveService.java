@@ -1,5 +1,6 @@
 package com.scy.health;
 
+import android.app.ActivityManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +11,8 @@ import android.util.Log;
 
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
+
+import java.util.List;
 
 import okhttp3.Call;
 
@@ -65,16 +68,28 @@ public class LiveService extends Service implements Runnable{
 
     @Override
     public IBinder onBind(Intent intent) {
+        if (isServiceRunning("com.scy.health.LiveService")){
+            return null;
+        }
         Log.i(TAG, "onBind, Thread: " + Thread.currentThread().getName());
         mThread = new Thread(this);
         mThread.start();
-
         return binder;
     }
 
     @Override
     public boolean onUnbind(Intent intent) {
         Log.i(TAG, "onUnbind, from:" + intent.getStringExtra("from"));
+        return false;
+    }
+
+    private boolean isServiceRunning(final String className) {
+        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningServiceInfo> info = activityManager.getRunningServices(Integer.MAX_VALUE);
+        if (info == null || info.size() == 0) return false;
+        for (ActivityManager.RunningServiceInfo aInfo : info) {
+            if (className.equals(aInfo.service.getClassName())) return true;
+        }
         return false;
     }
 }

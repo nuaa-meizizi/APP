@@ -90,7 +90,7 @@ public class UploadUnKnowTask extends AsyncTask<Void, Void, Boolean> {
         if (result){
             ((Activity)context).finish();
         }else {
-            Toast.makeText(context,"保存人脸失败",Toast.LENGTH_SHORT).show();
+            Toast.makeText(context,"验证人脸失败",Toast.LENGTH_SHORT).show();
         }
         dialog.cancel();
     }
