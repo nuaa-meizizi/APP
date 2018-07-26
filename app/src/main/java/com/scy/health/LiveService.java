@@ -68,9 +68,6 @@ public class LiveService extends Service implements Runnable{
 
     @Override
     public IBinder onBind(Intent intent) {
-        if (isServiceRunning("com.scy.health.LiveService")){
-            return null;
-        }
         Log.i(TAG, "onBind, Thread: " + Thread.currentThread().getName());
         mThread = new Thread(this);
         mThread.start();
@@ -80,6 +77,7 @@ public class LiveService extends Service implements Runnable{
     @Override
     public boolean onUnbind(Intent intent) {
         Log.i(TAG, "onUnbind, from:" + intent.getStringExtra("from"));
+        mThread.interrupt();
         return false;
     }
 

@@ -117,8 +117,8 @@ public class PhysicalExaminationTask extends AsyncTask<String, Void, String>  im
     }
 
     private void my_cancel(){
-        Log.i(TAG, "cancel: 执行了cancel方法");
         if (dataBroadcast != null) {
+            Log.i(TAG, "cancel: 执行了cancel方法");
             dataBroadcast.destroy();
             dataBroadcast = null;
         }
@@ -352,6 +352,8 @@ public class PhysicalExaminationTask extends AsyncTask<String, Void, String>  im
             Message message = new Message();
             message.what = 1;
             handler.sendMessage(message);
+            if (dataBroadcast!=null)
+                dataBroadcast.destroy();
         }
     }
 

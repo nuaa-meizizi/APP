@@ -250,7 +250,7 @@ public class Driving extends Fragment implements DataBroadcastInterface {
 
     @Override
     public void onBpChanged(int[] bp) {
-        Log.i(TAG, "onBpChanged: "+bp[0]+bp[1]);
+        Log.i(TAG, "onBpChanged: "+bp[0]+"/"+bp[1]);
         List<Integer> bplist = new ArrayList<>(); //数据集合
         bplist.add(bp[0]);
         bplist.add(bp[1]);

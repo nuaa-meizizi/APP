@@ -67,6 +67,10 @@
         <service
             android:name=".LiveService"
             android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".SimulationService"
+            android:enabled="true"
             android:exported="true"></service>
     </application>
 
