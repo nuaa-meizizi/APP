@@ -79,7 +79,7 @@ public class Measurement{
     }
 
 
-    public String driveMeasureIndicator(final MeasurementInterface measurementInterface,float temperature, int heartbeat, int[] bp, double[] eye, String sex){
+    public void driveMeasureIndicator(final MeasurementInterface measurementInterface,float temperature, int heartbeat, int[] bp, double[] eye, String sex){
         res2 = "";
         if (temperature > 37)
             res2+="体温较正常人偏高\n";
@@ -102,7 +102,7 @@ public class Measurement{
         RequestBody body = formBody.build();
         Request request = new Request.Builder()
                 .post(body)//传递请求体
-                .url("https://car2018.nuaa.app/?service=App.Car.Eye_predict")
+                .url("http://app.logicjake.xyz:8080/health/svm/eye/predict")
                 .build();
         OkHttpClient client = new OkHttpClient();//创建OkHttpClient对象。
         client.newCall(request).enqueue(new Callback() {
@@ -130,7 +130,5 @@ public class Measurement{
                 }
             }
         });
-        Log.i(TAG, "driveMeasureIndicator: "+res2);
-        return res2;
     }
 }
