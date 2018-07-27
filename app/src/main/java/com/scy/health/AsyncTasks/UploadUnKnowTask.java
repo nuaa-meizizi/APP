@@ -16,9 +16,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.UUID;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
+import static android.provider.Telephony.Mms.Part.CHARSET;
 import static com.scy.health.util.AppUtils.getPicName;
 
 public class UploadUnKnowTask extends AsyncTask<Void, Void, Boolean> {
@@ -92,57 +94,66 @@ public class UploadUnKnowTask extends AsyncTask<Void, Void, Boolean> {
     }
 
     private boolean uploadPic(){
-        String boundary = "******";
+        String boundary = UUID.randomUUID().toString();
         String end = "\r\n";
         String twoHyphens = "--";
         try {
             URL uri = new URL(uploadUrl);
             HttpURLConnection connection = (HttpURLConnection) uri.openConnection();
             connection.setRequestMethod("POST");
-            connection.setReadTimeout(5000);
+            connection.setReadTimeout(10000);
             connection.setConnectTimeout(10000);
+            connection.setDoInput(true);
+            connection.setDoOutput(true);
+            connection.setRequestProperty("connection", "keep-alive");
             connection.setRequestProperty("accept", "*/*");
             connection.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
 
             DataOutputStream dos = new DataOutputStream(connection.getOutputStream());
             String picName = getPicName(path);
-            dos.writeBytes("Content-Disposition: form-data; name=\"fileField\"; filename=\""+picName+"\"" + end);
-            dos.writeBytes(end);
+            StringBuffer sb = new StringBuffer();
+            sb.append(twoHyphens);
+            sb.append(boundary);
+            sb.append(end);
+            sb.append("Content-Disposition: form-data; name=\"fileField\"; filename=\""
+                    + picName + "\"" + end);
+            sb.append("Content-Type: application/octet-stream; charset="
+                    + CHARSET + end);
+            sb.append(end);
+            dos.write(sb.toString().getBytes());
 
             FileInputStream fis = new FileInputStream(path);
-            byte[] buffer = new byte[8192]; // 8k
+            byte[] buffer = new byte[1024]; // 8k
             int count = 0;
             while ((count = fis.read(buffer)) != -1) {
                 dos.write(buffer, 0, count);
-
             }
             fis.close();
-            dos.writeBytes(end);
+            dos.write(end.getBytes());
             dos.writeBytes(twoHyphens + boundary + twoHyphens + end);
             dos.flush();
             int responseCode = connection.getResponseCode();// 调用此方法就不必再使用conn.connect()方法
+            Log.d(TAG, "uploadPic: "+responseCode);
             if (responseCode == 200) {
                 //接收结果
-                InputStream is = connection.getInputStream();
-                InputStreamReader isr = new InputStreamReader(is, "utf-8");
-                BufferedReader br = new BufferedReader(isr);
-                String line;
-                StringBuilder sb = new StringBuilder();
-                while ( ( line = br.readLine() ) != null ) {
-                    sb.append(line);
+                InputStream input = connection.getInputStream();
+                StringBuffer sb1 = new StringBuffer();
+                int ss;
+                while ((ss = input.read()) != -1) {
+                    sb1.append((char) ss);
                 }
-                Log.d(TAG, "doInBackground: "+sb.toString());
-                JSONObject res = new JSONObject(sb.toString());
+                Log.d(TAG, "doInBackground: "+sb1.toString());
+                JSONObject res = new JSONObject(sb1.toString());
                 if (res.getInt("code") == 0) {
                     return getToken(res.getString("data"));
                 }
-                is.close();
             } else {
                 Log.e(TAG, "doInBackground: "+responseCode);
                 return false;
             }
             dos.close();
         }catch (Exception e) {
+            Log.e(TAG, "uploadPic: ", e);
             return false;
         }
         return false;
