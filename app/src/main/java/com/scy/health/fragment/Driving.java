@@ -65,7 +65,7 @@ public class Driving extends Fragment implements DataBroadcastInterface {
                         @Override
                         public void GetData(String content) {
                             Log.d(TAG, "GetData: "+content);
-                            if (!content.substring(0, content.length() - 1).equals("一切正常")){
+                            if (content.length() > 0 && !content.substring(0, content.length() - 1).equals("一切正常")){
                                 xfyunASR.speekText("联系紧急联系人");
                                 callPhone();
                                 baiduWakeUp.start();
