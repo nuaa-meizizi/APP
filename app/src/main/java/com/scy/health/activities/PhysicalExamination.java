@@ -10,10 +10,12 @@ import com.scy.health.AsyncTasks.PhysicalExaminationTask;
 import com.scy.health.R;
 import com.scy.health.util.XfyunASR;
 
+import java.util.concurrent.Executors;
+
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class PhysicalExamination extends AppCompatActivity {
-    private static final String TAG = "PhysicalExaminationTask";
+    private static final String TAG = "PhysicalExamination";
     private Context context;
     private XfyunASR xfyunASR;
     private PhysicalExaminationTask PhysicalExaminationTask;
@@ -34,7 +36,7 @@ public class PhysicalExamination extends AppCompatActivity {
 
     public void getData(){
         PhysicalExaminationTask = new PhysicalExaminationTask(context,sweetAlertDialog,xfyunASR);
-        PhysicalExaminationTask.execute();
+        PhysicalExaminationTask.executeOnExecutor(Executors.newCachedThreadPool());
     }
 
     @Override

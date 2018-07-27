@@ -117,7 +117,8 @@ public class Driving extends Fragment implements DataBroadcastInterface {
                     }
                     break;
                 case 4:
-                    Toast.makeText(getContext(),"蓝牙连接成功",Toast.LENGTH_SHORT).show();
+                    if (getContext()!=null)
+                        Toast.makeText(getContext(),"蓝牙连接成功",Toast.LENGTH_SHORT).show();
                     break;
                 case 5:
                     if (getContext()!=null)
