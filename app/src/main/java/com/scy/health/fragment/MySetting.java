@@ -69,6 +69,7 @@ public class MySetting extends Fragment {
         phone.setText(sharedPreferences.getString("phone","未设置"));
         sex.setText(sharedPreferences.getString("sex","未设置"));
         String nameText = sharedPreferences.getString("name","未登录");
+        Log.i(TAG, "initView: "+nameText);
         name.setText(nameText);
         clear.setOnClickListener(new View.OnClickListener() {
             @Override

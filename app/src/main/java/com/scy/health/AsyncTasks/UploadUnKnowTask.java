@@ -165,7 +165,7 @@ public class UploadUnKnowTask extends AsyncTask<Void, Void, Boolean> {
         BufferedReader br = null;
         try {
             //接口地址
-            URL uri = new URL(getTokenUrl+"?"+uid);
+            URL uri = new URL(getTokenUrl+"?uid="+uid);
             HttpURLConnection connection = (HttpURLConnection) uri.openConnection();
             connection.setRequestMethod("GET");
             connection.setReadTimeout(5000);
@@ -186,6 +186,9 @@ public class UploadUnKnowTask extends AsyncTask<Void, Void, Boolean> {
                 JSONObject res = new JSONObject(sb.toString());
                 if (res.getInt("status") == 0) {
                     editor.putString("token",res.getJSONObject("data").getString("token"));
+                    editor.putString("name",res.getJSONObject("data").getString("name"));
+                    Log.i(TAG, "getToken: "+res.getJSONObject("data").getString("name"));
+                    editor.putString("password",res.getJSONObject("data").getString("password"));
                     editor.commit();
                     return true;
                 }
