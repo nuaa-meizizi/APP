@@ -5,6 +5,8 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.FileInputStream;
@@ -23,6 +25,7 @@ public class UploadKnowTask extends AsyncTask<Void, Void, Boolean> {
     private SweetAlertDialog dialog;
     private String path;
     private String uploadUrl = "http://192.168.254.63:8080/upload_known";
+    private String getPathUrl = "http://app.logicjake.xyz:8080/health/settings/getpath";
 
     public UploadKnowTask(Context context, SweetAlertDialog dialog, String path) {
         this.context = context;
@@ -32,6 +35,56 @@ public class UploadKnowTask extends AsyncTask<Void, Void, Boolean> {
 
     @Override
     protected Boolean doInBackground(Void... voids) {
+        //先获取上传地址
+        StringBuilder sb = new StringBuilder();
+        InputStream is = null;
+        BufferedReader br = null;
+        try {
+            //接口地址
+            URL uri = new URL(getPathUrl);
+            HttpURLConnection connection = (HttpURLConnection) uri.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setReadTimeout(5000);
+            connection.setConnectTimeout(10000);
+            connection.setRequestProperty("accept", "*/*");
+
+            int responseCode = connection.getResponseCode();// 调用此方法就不必再使用conn.connect()方法
+            if (responseCode == 200) {
+                //接收结果
+                is = connection.getInputStream();
+                br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+                String line;
+                //缓冲逐行读取
+                while ((line = br.readLine()) != null) {
+                    sb.append(line);
+                }
+                Log.d(TAG, "doInBackground() returned: " + sb.toString());
+                JSONObject res = new JSONObject(sb.toString());
+                if (res.getInt("status") == 0) {
+                    uploadUrl = res.getString("data") + "upload_known";
+                    return uploadPic();
+                }
+            }
+            else
+                return false;
+        } catch ( Exception ignored ) {
+        } finally {
+            //关闭流
+            try {
+                if(is!=null){
+                    is.close();
+                }
+                if(br!=null){
+                    br.close();
+                }
+            } catch ( Exception ignored ) {
+                Log.e(TAG, "doInBackground: ",ignored );
+            }
+        }
+        return false;
+    }
+
+    private boolean uploadPic(){
         String boundary = "******";
         String end = "\r\n";
         String twoHyphens = "--";
