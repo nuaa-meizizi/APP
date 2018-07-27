@@ -50,7 +50,7 @@ public class Measurement{
         RequestBody body = formBody.build();
         Request request = new Request.Builder()
                 .post(body)//传递请求体
-                .url("https://car2018.nuaa.app/?service=App.Car.Health_predict")
+                .url("http://app.logicjake.xyz:8080/health/svm/health/predict")
                 .build();
         OkHttpClient client = new OkHttpClient();//创建OkHttpClient对象。
         client.newCall(request).enqueue(new Callback() {
@@ -97,7 +97,6 @@ public class Measurement{
         String args = "";
         for(int i = 0; i < eye.length;i++)
             args = args+Double.toString(eye[i])+" ";
-        Log.i(TAG, "driveMeasureIndicator: "+args);
         formBody.add("args",args);//传递键值对参数
         RequestBody body = formBody.build();
         Request request = new Request.Builder()
