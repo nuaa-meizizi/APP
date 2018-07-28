@@ -195,13 +195,13 @@ public class MainActivity extends AppCompatActivity implements EventListener {
     public void response(String content) {      //自定义语音指令
         Log.i(TAG, "response: "+content);
         if (content.equals("进入首页") || content.equals("首页")) {
-            setTabSelection(0);
+            bottomNavigationView.selectTab(0);
             xfyunASR.speekText("好的");
         } else if (content.equals("开车")) {
-            setTabSelection(1);
+            bottomNavigationView.selectTab(1);
             xfyunASR.speekText("好的");
         } else if (content.equals("个人设置") || content.equals("设置")) {
-            setTabSelection(2);
+            bottomNavigationView.selectTab(2);
             xfyunASR.speekText("好的");
         } else {
             xfyunASR.speekText("我不能理解你的命令");
